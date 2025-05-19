@@ -23,7 +23,7 @@ def create_enhanced_integration_agent():
     # Initialize LLM with LangSmith tracing
     llm = ChatAnthropic(
         model="claude-3-opus-20240229",
-        callbacks=[observability.get_langsmith_handler()]
+        # callbacks=[observability.get_langsmith_handler()]
     )
 
     # Initialize state graph

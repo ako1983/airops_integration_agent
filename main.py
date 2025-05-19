@@ -1,7 +1,18 @@
 # main.py
+import sys
+import os
+
+# Get the absolute path to the project root (directory containing main.py)
+project_root = os.path.dirname(os.path.abspath(__file__))
+print(f"Project root: {project_root}")
+
+# Add the project root to the path
+sys.path.insert(0, project_root)
+
 import json
 from src.graph import create_enhanced_integration_agent
 from utils.helpers import load_integration_actions, load_workflow_context
+
 
 def test_integration_agent():
     """
