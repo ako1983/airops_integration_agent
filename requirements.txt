@@ -1,0 +1,37 @@
+# Core dependencies
+langchain==0.1.9
+langchain-community==0.0.21  # Added community package
+langgraph==0.0.37
+anthropic==0.18.0
+pydantic==2.6.0
+typing-extensions==4.9.0
+
+# Observability and tracking
+langsmith<= 0.1.0
+wandb==0.16.3
+cloudpickle==3.0.0
+
+# Data processing
+numpy==1.26.4
+pandas==2.2.1
+
+# API and HTTP
+requests==2.31.0
+httpx==0.26.0
+
+# Utilities
+python-dotenv==1.0.1
+tqdm==4.66.2
+PyYAML==6.0.1
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.5
+
+# Optional - Visualization
+matplotlib==3.8.3
+plotly==5.18.0
+
+# Optional - Documentation
+sphinx==7.2.6
+nbformat==5.9.2

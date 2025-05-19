@@ -1,0 +1,536 @@
+<workflow-spec>
+# Workflow Specification
+
+A workflow definition is a list structure that represents a sequence of steps to produce a certain output. A workflow is like a programming function, which receives arguments, works through a series of steps and returns an output.. Workflows are executed by the airops.com platform and have a specific structure. Invalid workflows with unsupported parameters will fail and not execute.
+
+# Input Schema
+
+The input schema is used to validate the input payload provided to the workflow at runtime, to ensure that it meets the expected format and requirements. Input names cannot collide with the step names in the definition.
+
+It follows the following structure:
+
+```json
+[
+  {
+    "name": "first_name",
+    "required": true,
+    "type": "short_text", // can be any of "long_text", "short_text", "json", "single_select", "number"
+    "label": "First Name", // Used for displaying in the executions history
+    "group-id": "no-group", // Used for grouping the inputs in the executions history
+    "placeholder": "Enter your first name",
+    "test_value": "Robert", // The default input value if not provided
+    "options": ["option_1", "option_2"] // Required for "single_select" type
+  },
+  {
+    "name": "last_name",
+    "required": true,
+    "type": "short_text",
+    "label": "Last Name",
+    "group-id": "no-group",
+    "placeholder": "Enter your last name",
+    "test_value": "Smith"
+  }
+]
+```
+
+# Definition
+
+A definition is the steps that the workflow will execute. It’s a list of steps that will be executed in order. Each step has a name, type, and configuration. Each step in the workflow has access to the outputs of the previous steps and can reference them, alongside the input variables.
+
+A definition has the following requirements:
+
+- List of nodes
+- Each node represents a step
+- Node’s position in the list represents when it’s going to be executed
+
+It has the following structure:
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "step_type",
+    "config": {}
+  },
+  {
+    "name": "step_2",
+    "type": "step_type",
+    "config": {}
+  }
+]
+```
+
+The runner has the following properties:
+
+- The runner will execute the `step_1` and then the `step_2` because the `step_1` is first in the list. `step_2` can reference `step_1`'s output as `step_1.output`. The order in the list impacts the order of execution, not the step number itself.
+
+- Any step can reference an input variable just by its name `input_variable_a`, the way steps are referenced in code, text and LLM steps are different
+
+- Results from previous steps will be collected and available as variables for the next steps. A step output can only be referenced as `step_name.output` if it’s a previous step in the list. If a step outputs JSON, you can reference sub-keys of outputs to be efficient and specific, you do not always need to reference the entire output.
+
+**Example: Hello World**
+This app definition returns “Hello World!”
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "text",
+    "config": {
+      "template": "Hello World!"
+    }
+  }
+]
+```
+
+Returns “Hello World!”
+
+## Name
+
+The step name must be unique in the app and it’s important for referencing the step output anywhere in the app.
+As a rule of thumb, the usually has the format: `step_1`, `step_2`, `step_3`, etc.
+
+## Config
+
+The config contains key ↔ values required for the step’s logic. Each step type requires a specific configuration. You must never guess keys.
+
+## Type
+
+A step has a type, which is a predefined function that has its own internal implementation and the app runner is capable of executing. Each step type performs a different task.
+
+`type` could be one of the following step types:
+
+- `text`
+- `llm`
+- `code`
+- `iteration`
+- `app`
+- `conditional`
+- `fetch_api`
+- `google_search`
+
+### Text
+
+A text step represents a template string, these strings may contain any valid liquid syntax including variables that represent previous steps and input values, which are expressions delimited by curly braces `{{ }}`. The replacement fields must be from the step’s variables. When executing the step, the runner will replace the fields with the variable values. In Text steps you can write any valid liquid syntax including conditionals, for/while loops, date formatting.
+
+**Required Config**
+
+- `template` - Contains the Liquid string
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "text",
+    "config": {
+      "template": "Hi {{name}}"
+    }
+  }
+]
+```
+
+If `name = Robert` the above would return “Hi Robert”
+
+### LLM
+
+An LLM step is capable of defining a prompt and running it against a supported Large Language Model. The output from this step will be the response from the model.
+
+**Required Config**
+
+- `model` [String]: Large language model to run the prompt (e.g: GPT-4o, Claude, o1-preview etc)
+- `config` [Object]: Specific configuration for the selected model that maps to the expected requirements for its API definition. Generally avoid making suggestions around setting temperature unless the user wants more or less creativity.
+
+The `config` variable options change depending on the model you’re using:
+
+- `gpt-3.5-turbo`, `gpt-4`
+  - `messages` [Array]: Each message supports Liquid syntax
+  - `temperature` [Number]
+  - `max_tokens` [Number]
+  - `stream` [Boolean]
+- `claude-v1`, `claude-v1-100k`, `claude-instant-v1`, `claude-instant-v1-100k`
+  - `messages` [Array]: Each message supports Liquid syntax
+  - `temperature` [Number]
+  - `max_tokens` [Number]
+  - `stream` [Boolean]
+
+### Code
+
+The Code step executes Python or Javascript code. All the input variables and step outputs will be available in the code as programming variables.
+
+**Required Config**
+
+- `function` [String] - Contains the code script with the specified language
+- `language` [String] - Programming language: `python` or `javascript`
+
+- **Example**
+  ```json
+  [
+    {
+      "name": "step_1",
+      "type": "code",
+      "config": {
+        "function": "return f'Hi {name}'",
+        "language": "python"
+      }
+    }
+  ]
+  ```
+  If `name = Robert` returns “Hi Robert”
+
+### Iteration
+
+The Iteration step allows iterating through a list of items.
+
+**Required Config**
+
+- `iterator` [String or Array] - Reference to the step’s output that is an array of items that you want to iterate (e.g: `step_name.output` )
+- `step_function` [Step] - Step variable that runs for each element. The element will be injected into the `iteration_step` as a variable named `element`
+
+- Example 1
+  ```json
+  [
+    {
+      "name": "iteration_step",
+      "type": "iteration",
+      "config": {
+        "iterator": "elements",
+        "step_function": [
+          {
+            "name": "text_step",
+            "type": "text",
+            "config": {
+              "template": "Hi {{iteration_step.element}}"
+            }
+          }
+        ]
+      }
+    }
+  ]
+  ```
+  If `elements = ["Robert", "John", "Petter"]` returns [”Hi Robert”, “Hi John”, “Hi Petter”]
+- Example 2
+  ```json
+  [
+    {
+      "name": "code_step",
+      "type": "code",
+      "config": {
+        "function": "return ['Robert', 'John', 'Petter']",
+        "language": "python"
+      }
+    },
+    {
+      "name": "iteration_step",
+      "type": "iteration",
+      "config": {
+        "iterator": "code_step",
+        "step_function": [
+          {
+            "name": "text_step",
+            "type": "text",
+            "config": {
+              "template": "Hi {{iteration_step.element}}"
+            }
+          }
+        ]
+      }
+    }
+  ]
+  ```
+
+### App
+
+The App step can import an existing app and execute it as a step.
+
+**Required Config**
+
+- `app_id` [Number] - ID of the app to be imported
+- `app_version` [Number | null] - Number of the app version to use. If `null` the active version will be used.
+- `inputs` [Object] - Structure that maps the current variables to the app inputs required:
+
+  ```json
+  "inputs": {
+  [imported_app_input]: "liquid_template"
+  }
+  ```
+
+- Example
+  ```json
+  [
+    {
+      "name": "text_step",
+      "type": "text",
+      "config": {
+        "template": "Input for the app with id 2"
+      }
+    },
+    {
+      "name": "app_step",
+      "type": "app",
+      "config": {
+        "app_id": 2,
+        "app_version": 34,
+        "inputs": {
+          "app_2_input": "{{text_step.output}}"
+        }
+      }
+    }
+  ]
+  ```
+
+### Conditional
+
+A conditional step is a way of deciding one of two possible flows of execution based on a condition. The condition is defined and runs as JavaScript code. All the input variables and step outputs will be available in the code as programming variables.
+
+**Required Config**
+
+- `condition` [String]: Code with the condition logic
+- `if_branch` [Array[Step]]: List of steps that will be executed if the condition is met
+- `else_branch` [Array[Step]]: List of steps that will be executed if the condition is not met
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "conditional",
+    "config": {
+      "condition": "a > b",
+      "if_branch": [
+        {
+          "name": "step_2",
+          "type": "text",
+          "config": { "template": "a is greater than b" }
+        }
+      ],
+      "else_branch": [
+        {
+          "name": "step_3",
+          "type": "text",
+          "config": { "template": "b is greater or equal than a" }
+        }
+      ]
+    }
+  }
+]
+```
+
+### Fetch API
+
+A fetch API step can do a GET or POST request to any API endpoint. All their config values are parsed as Liquid templates
+
+**Required Config**
+
+- `method` [String]: Method to be used in the request. It can be `get` or `post`
+- `url` [String]: Endpoint url
+- `body` [String[JSON]]: Body to send in the request. It should be a string containing the body in JSON format.
+- `headers` [String[JSON]]: Headers to send in the request. It should be a string containing the headers in a JSON format
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "fetch_api",
+    "config": {
+      "method": "get",
+      "url": "https://dog.ceo/api/breeds/image/random",
+      "body": null,
+      "headers": "{\"Content-Type\": \"application/json\"}"
+    }
+  }
+]
+```
+
+### JSON Format
+
+A JSON Format step can form a JSON using liquid syntax and support non-string references
+
+**Required Config**
+
+- `unformatted_json` [JSON]: key-value representing the json without formatting, both key and values must be strings which will be then parsed
+  with liquid syntax and if possible parsed to JSON
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "json_formatter",
+    "config": {
+      "unformatted_json": {
+        "first_key": "First Value"
+      }
+    }
+  }
+]
+```
+
+### Google Search
+
+A Google Search step uses the Serp API to search information in Google.
+
+**Required Config**
+
+- `query` [String]: What will be searched in Google. It supports Liquid syntax for injecting variables
+- `search_params` [String[JSON]]: Params to use in the SerpAPI request
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "google_search",
+    "config": {
+      "query": "Temperature in Montevideo"
+    }
+  }
+]
+```
+
+### Web Scrape
+
+A Web Scrape step gets the html of the URL and returns the text found.
+
+**Required Config**
+
+- `url` [String]: The url that will be scraped
+- `max_length` [Number]: Maximum number of characters to return
+- `timeout` [Number]: Maximum timeout to send to the Web Scraping service (in milliseconds)
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "web_scrape",
+    "config": {
+      "url": "https://www.airops.com",
+      "max_length": 1200,
+      "timeout": 30000
+    }
+  }
+]
+```
+
+### Image Generation
+
+An Image Generation step generates an image using AI.
+
+**Required Config**
+
+- `mode` [String]: The mode to use for the image generation. It can be `generate`, `edit` or `variants`
+
+Depending on the mode, the following config variables are required:
+
+`generate`
+
+- `model` [String]: The model to use for the image generation. It can be `dall-e-2`, `dall-e-3`, `stable-diffusion-xl-1024-v1-0`, `stable-diffusion-xl-1024-v0-9`
+- `prompt` [String]: The prompt to use for the image generation. It supports Liquid syntax for injecting variables
+- `dimensions` [Object]: The dimensions of the image to generate. It should be an object with the following keys: `width` and `height`
+
+`edit`
+
+- `model` [String]: The model to use for the image generation. It can only be `dall-e-2`
+- `image` [String]: The url of the image to edit. It supports Liquid syntax for injecting variables
+- `mask` [String]: The url of the mask to use for the image edition. It supports Liquid syntax for injecting variables
+
+`variants`
+
+- `model` [String]: The model to use for the image generation. It can only be `dall-e-2`
+- `image` [String]: The url of the image to generate variants from. It supports Liquid syntax for injecting variables
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "image_generation",
+    "config": {
+      "mode": "generate",
+      "prompt": "An illustration of a kitten racing cars in the desert at night against a cheetah",
+      "dimensions": { "width": 512, "height": 512 }
+    }
+  }
+]
+```
+
+### Custom Error
+
+A Custom Error step can be used to throw a custom error message.
+
+**Required Config**
+
+- `message` [String]: The message to be thrown as an error. It supports Liquid syntax for injecting variables
+- `code` [String]: The code of the error
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "custom_error",
+    "config": {
+      "message": "The value of a is greater than the value of b",
+      "code": "A_GREATER_THAN_B"
+    }
+  }
+]
+```
+
+### Memory Retrieval
+
+A Memory Retrieval step can retrieve records from a Vector Store. Unlike the memory search step, this step will only fetch the data that we have in the database using filters, without performing any kind of search (semantic or otherwise).
+
+**Required Config**
+
+- `vector_store_id` [Number]: ID of the Memory Store to be used
+- `selected_documents` [Array[Object]]: List of documents to filter the records. Each object in the array should have a `value` (document ID) and `label` (document name)
+- `filters` [Object]: Filters to be applied on the retrieval. The filters should be an object with `children` (array of filter conditions), `logical_operator` (logical operator for combining filters), and `type` (type of filter, e.g., "inner").
+
+**Example**
+
+```json
+[
+  {
+    "name": "step_1",
+    "type": "memory_retrieval",
+    "config": {
+      "vector_store_id": 41,
+      "selected_documents": [
+        {
+          "value": 123,
+          "label": "Document 1"
+        },
+        {
+          "value": 456,
+          "label": "Document 2"
+        }
+      ],
+      "filters": {
+        "children": [
+          {
+            "type": "leaf",
+            "name": "qwdqwd",
+            "operator": "$gt",
+            "value": "60"
+          }
+        ],
+        "logical_operator": "$and",
+        "type": "inner"
+      }
+    }
+  }
+]
+```
+
+</workflow-spec>

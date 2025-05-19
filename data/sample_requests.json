@@ -1,0 +1,79 @@
+[
+  {
+    "request": "Create a new Webflow collection item with title 'New Blog Post About SEO' using our top performing keyword",
+    "context": {
+      "step_1": {
+        "output": {
+          "Domain": "airops.com",
+          "Rank": 539937,
+          "Organic Keywords": 4768,
+          "Organic Traffic": 2619
+        }
+      },
+      "step_2": {
+        "output": [
+          {
+            "Url": "https://www.airops.com/",
+            "Keyword": "airops",
+            "Search Volume": 1300,
+            "Traffic (%)": 39.7
+          }
+        ]
+      }
+    }
+  },
+  {
+    "request": "Send a Slack message to #general channel announcing our traffic increase",
+    "context": {
+      "step_1": {
+        "output": {
+          "Domain": "airops.com",
+          "Rank": 539937,
+          "Organic Keywords": 4768,
+          "Organic Traffic": 2619,
+          "Organic Cost": 2394
+        }
+      }
+    }
+  },
+  {
+    "request": "Create a WordPress post about our best performing keyword",
+    "context": {
+      "step_2": {
+        "output": [
+          {
+            "Url": "https://www.airops.com/",
+            "Keyword": "airops",
+            "Search Volume": 1300,
+            "Traffic (%)": 39.7
+          },
+          {
+            "Url": "https://www.airops.com/",
+            "Keyword": "air ops",
+            "Search Volume": 260,
+            "CPC": 0.5,
+            "Competition": 0.1,
+            "Traffic (%)": 2.44
+          }
+        ]
+      }
+    }
+  },
+  {
+    "request": "Create a Google Doc summarizing our SEO metrics",
+    "context": {
+      "step_1": {
+        "output": {
+          "Domain": "airops.com",
+          "Rank": 539937,
+          "Organic Keywords": 4768,
+          "Organic Traffic": 2619,
+          "Organic Cost": 2394,
+          "Adwords Keywords": 2,
+          "Adwords Traffic": 77,
+          "Adwords Cost": 38
+        }
+      }
+    }
+  }
+]

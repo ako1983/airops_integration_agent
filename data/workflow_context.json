@@ -1,0 +1,102 @@
+{
+  "step_1": {
+    "output": {
+      "Domain": "airops.com",
+      "Rank": 539937,
+      "Organic Keywords": 4768,
+      "Organic Traffic": 2619,
+      "Organic Cost": 2394,
+      "Adwords Keywords": 2,
+      "Adwords Traffic": 77,
+      "Adwords Cost": 38
+    }
+  },
+  "inputs": {
+    "domain": "https://airops.com"
+  },
+  "step_2": {
+    "output": [
+      {
+        "Url": "https://www.airops.com/",
+        "Keyword": "airops",
+        "Search Volume": 1300,
+        "CPC": 0.5,
+        "Competition": 0.1,
+        "Traffic (%)": 39.7,
+        "Number of Results": 579000
+      },
+      {
+        "Url": "https://www.airops.com/",
+        "Keyword": "air ops",
+        "Search Volume": 260,
+        "CPC": 0.5,
+        "Competition": 0.1,
+        "Traffic (%)": 2.44,
+        "Number of Results": 232000000
+      },
+      {
+        "Url": "https://www.airops.com/blog/best-prompts-for-creating-landing-page-copy-with-chatgpt-and-gemini",
+        "Keyword": "command for creating landing page copy chatgpt gemini",
+        "Search Volume": 260,
+        "CPC": 0,
+        "Competition": 0,
+        "Traffic (%)": 2.44,
+        "Number of Results": 85
+      },
+      {
+        "Url": "https://www.airops.com/blog/schema-markup-for-a-marketing-consultant-d3abd",
+        "Keyword": "schema for service type busniess - i.e. marketing consultant",
+        "Search Volume": 260,
+        "CPC": 0,
+        "Competition": 0,
+        "Traffic (%)": 2.44,
+        "Number of Results": 36700000
+      },
+      {
+        "Url": "https://www.airops.com/blog/best-prompts-for-creating-landing-page-copy-with-chatgpt-and-gemini",
+        "Keyword": "prompt for creating landing page copy chatgpt gemini",
+        "Search Volume": 260,
+        "CPC": 0,
+        "Competition": 0,
+        "Traffic (%)": 2.44,
+        "Number of Results": 45200
+      }
+    ]
+  },
+  "step_3": {
+    "output": [
+      {
+        "keyword": "airops",
+        "is_brand_keyword": true,
+        "description": "The term 'airops' is a brand keyword referring to the company or entity named AirOps, which is indicated by its direct association with the URL 'https://www.airops.com/'. The search volume and traffic percentage suggest notable interest in this specific brand."
+      },
+      {
+        "keyword": "air ops",
+        "is_brand_keyword": false,
+        "description": "The term 'air ops' is a generic industry keyword often associated with aviation operations or air operations. While it could be related to the brand 'Airops' if used in a specific context, without additional context linking it directly to a brand, it remains a generic term."
+      },
+      {
+        "keyword": "command for creating landing page copy chatgpt gemini",
+        "is_brand_keyword": true,
+        "description": "This keyword includes 'ChatGPT' and 'Gemini', which are brand-specific terms related to AI technologies. It suggests a branded search for techniques or commands using these specific AI tools to create landing page copy."
+      },
+      {
+        "keyword": "schema for service type business - i.e. marketing consultant",
+        "is_brand_keyword": false,
+        "description": "A generic industry keyword focused on schema markup for service-oriented businesses like marketing consultants. It does not reference any specific brand and is instead related to a technical SEO practice applicable to a wide range of businesses."
+      },
+      {
+        "keyword": "prompt for creating landing page copy chatgpt gemini",
+        "is_brand_keyword": false,
+        "description": "This keyword is a combination of product-related terms and generic industry terms. It refers to using AI tools, specifically ChatGPT and Gemini, to create landing page copy. While 'ChatGPT' and 'Gemini' are product names, the overall search intent is more informational and focused on the task of creating landing page copy, making it a non-brand keyword."
+      }
+    ]
+  },
+  "step_5": {
+    "output": {
+      "keyword": "prompt for creating landing page copy chatgpt gemini",
+      "is_brand_keyword": false,
+      "description": "This keyword is a combination of product-related terms and generic industry terms. It refers to using AI tools, specifically ChatGPT and Gemini, to create landing page copy. While 'ChatGPT' and 'Gemini' are product names, the overall search intent is more informational and focused on the task of creating landing page copy, making it a non-brand keyword."
+    }
+  }
+}

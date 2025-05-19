@@ -1,0 +1,2092 @@
+<integration_actions>
+A JSON list of available integration actions. Each action contains its integration, name, workflow definition, and inputs schema.
+
+[
+  {
+    "integration": "webflow",
+    "action": "List Collection Items",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\n\napi_key = integration['api_key']\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json'\n}\n\nresponse = requests.get(f'https://api.webflow.com/collections/{collection_id}/items', headers=headers)\n\nif response.status_code != 200:\n raise Exception(f'Failed to fetch collection items. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nreturn result"
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      },
+      {
+        "interface": "short_text",
+        "label": "Collection ID",
+        "name": "collection_id",
+        "hint": "Enter your Webflow Collection ID here. You can find this by heading over to the CMS section of your Webflow site, clicking on the Collection and then Settings. You will see the Collection ID at the top, it looks like 64da9a472f587cea23bb354.",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      }
+    ]
+  },
+  {
+    "integration": "webflow",
+    "action": "Create Collection Item",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\napi_key = integration['api_key']\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n 'content-type': 'application/json'\n}\n\nbody_data = {\n 'fields': {\n 'slug': slug,\n 'name': name,\n '_archived': False,\n '_draft': False\n }\n}\n\nif fields is not None:\n if isinstance(fields, dict):\n body_data['fields'].update(fields)\n else:\n raise ValueError(\"Fields is not a valid JSON\")\n\nresponse = requests.post(f'https://api.webflow.com/collections/{collection_id}/items', headers=headers, data=json.dumps(body_data))\n\nif response.status_code != 200:\n raise Exception(f'Failed to create the collection item. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nreturn result",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Collection ID",
+        "name": "collection_id",
+        "hint": "Enter your Webflow Collection ID here. You can find this by heading over to the CMS section of your Webflow site, clicking on the Collection and then Settings. You will see the Collection ID at the top, it looks like 64da9a472f587cea23bb354.",
+        "required": true,
+        "group_id": "no-group",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Name",
+        "name": "name",
+        "hint": "The name of the collection item you want to create e.g. \"My first article on webflow!\"",
+        "required": true,
+        "group_id": "no-group",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Slug",
+        "name": "slug",
+        "hint": "URL slug of the item, e.g. my-first-article",
+        "required": false,
+        "group_id": "no-group",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "json",
+        "label": "Fields",
+        "name": "fields",
+        "hint": "Additional fields for the item as a JSON object {\"key\": \"value\"}. These need to match the fields you have in your collection exactly, using their API name (e.g. body, not Body). You can fetch your fields here : https://developers.webflow.com/reference/collection-details",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow",
+    "action": "List Sites",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\n\napi_key = integration['api_key']\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json'\n}\n\nresponse = requests.get('https://api.webflow.com/sites', headers=headers)\n\nif response.status_code != 200:\n raise Exception(f'Failed to fetch sites. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nreturn result"
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      }
+    ]
+  },
+  {
+    "integration": "webflow",
+    "action": "List Collections",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\n\napi_key = integration['api_key']\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json'\n}\n\nresponse = requests.get(f'https://api.webflow.com/sites/{site_id}/collections', headers=headers)\n\nif response.status_code != 200:\n raise Exception(f'Failed to fetch collections. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nreturn result"
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      },
+      {
+        "interface": "short_text",
+        "label": "Site ID",
+        "name": "site_id",
+        "hint": "Enter your Webflow Collection ID here. You can find this by listing all of your sites using the List Sites action",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      }
+    ]
+  },
+  {
+    "integration": "webflow",
+    "action": "Update Collection Item",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\napi_key = integration['api_key']\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n 'content-type': 'application/json'\n}\n\nif not isinstance(fields, dict):\n raise ValueError(\"Fields is not a valid JSON\")\n\nbody_data = {\n 'fields': fields\n}\n\nresponse = requests.patch(f'https://api.webflow.com/collections/{collection_id}/items/{item_id}', headers=headers, data=json.dumps(body_data))\n\nif response.status_code != 200:\n raise Exception(f'Failed to create the collection item. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nreturn result"
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      },
+      {
+        "interface": "short_text",
+        "label": "Collection ID",
+        "name": "collection_id",
+        "hint": "Enter your Webflow Collection ID here. You can find this by heading over to the CMS section of your Webflow site, clicking on the Collection and then Settings. You will see the Collection ID at the top, it looks like 64da9a472f587cea23bb354.",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      },
+      {
+        "interface": "short_text",
+        "label": "Item ID",
+        "name": "item_id",
+        "hint": "Enter your Item ID here. You can find this by heading over to the CMS section of your Webflow site, clicking on the Collection and then the Item. You will see the Item ID as a property, it looks like 6504b12096a999eb2b79ceae.",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      },
+      {
+        "interface": "json",
+        "label": "Fields",
+        "name": "fields",
+        "hint": "Additional fields for the item as a JSON object {\"key\",\"value\"}. These need to match the fields you have in your collection exactly, using their API name (e.g. body, not Body). You can fetch your fields here : https://developers.webflow.com/reference/collection-details",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      }
+    ]
+  },
+  {
+    "integration": "slack",
+    "action": "Send Channel Message",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\n\nurl = \"https://slack.com/api/chat.postMessage\"\n\ndata = {\n \"channel\": channel,\n \"text\": text,\n}\n\nheaders = {\n \"Content-type\": \"application/json; charset=utf-8\",\n \"Authorization\": \"Bearer \" + integration['token']\n}\n\nresponse = requests.post(url, headers=headers, json=data)\n\nif response.status_code != 200:\n raise Exception(f\"Request to slack API failed with status code {response.status_code}, the response was: {response.text}\")\n \nreturn response.json()",
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      },
+      {
+        "interface": "short_text",
+        "label": "Channel",
+        "name": "channel",
+        "hint": "Public or private channel to send message to",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      },
+      {
+        "interface": "long_text",
+        "label": "Text",
+        "name": "text",
+        "hint": "The formatted text of the message to be published",
+        "required": true,
+        "test_value": "",
+        "options": [],
+        "group_id": "no-group"
+      }
+    ]
+  },
+  {
+    "integration": "notion",
+    "action": "Create Page",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "javascript",
+          "function": "if (dynamic.page_content__markdown_ \u0026\u0026 dynamic.page_content__markdown_.length) {\n return martian.markdownToBlocks(dynamic.page_content__markdown_);\n} else {\n return null;\n}",
+          "chainError": ""
+        }
+      },
+      {
+        "name": "step_2",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\n\nNOTION_API_KEY = integration['token']\n\n# Define the endpoint URL and headers\nurl = \"https://api.notion.com/v1/pages\"\nheaders = {\n \"Authorization\": \"Bearer {}\".format(NOTION_API_KEY),\n \"Content-Type\": \"application/json\",\n \"Notion-Version\": \"2022-06-28\",\n}\n\n# Define the request payload\ndata = {\n \"parent\": {\"page_id\": dynamic['page']},\n \"properties\": {\n \"title\": {\"title\": [{\"text\": {\"content\": dynamic['title']}}]},\n },\n}\n\n# Include emoji icon if provided\nif 'emoji' in dynamic and dynamic['emoji']:\n data['icon'] = {\"emoji\": dynamic['emoji']}\n\n# Include page content if provided\nif dynamic['page_content__markdown_']:\n data['children'] = step_1[\"output\"]\n\n# Send the POST request\nresponse = requests.post(url, headers=headers, json=data)\n\n# Check if the request was successful\nif response.status_code != 200:\n # Return the response JSON if there's an error\n raise Exception(response.json())\n\n# Return the response JSON if the request was successful\nreturn response.json()",
+          "chainError": "",
+          "lambda_function": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "9ca6dcc9-e27c-481d-b617-23f52822d10b",
+        "action_id": 7,
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow_v2",
+    "action": "Create Collection Item",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\ncollection_id = dynamic['collection']\n\napi_key = integration.get('api_key') or integration.get('token')\n\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n 'content-type': 'application/json'\n}\n\nbody_data = {\n \"isArchived\": False,\n \"isDraft\": False,\n \"fieldData\": {}\n}\n\nprefix = \"custom_field_\"\nfields = { k[len(prefix):]: v for k, v in dynamic.items() if k.startswith(prefix) }\n\n\ndef req_get(url, headers = {}, max_retries = 10):\n for retry in range(max_retries):\n response = requests.get(url, headers=headers)\n\n # If rate limited, wait for a bit before retrying. The wait time increases with each retry.\n if response.status_code == 429:\n time.sleep(2 ** retry)\n else:\n break\n\n return response\n\ndef get_collection_details():\n headers = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n 'content-type': 'application/json'\n }\n\n response = req_get(f'https://api.webflow.com/v2/collections/{collection_id}', headers = headers)\n\n if response.status_code != 200:\n raise Exception(\n f'Failed to fetch collection details. Status code: {response.status_code}, Message: {response.text}')\n\n result = response.json()\n\n return result\n\ncollection_details = get_collection_details()\ncollection_fields = collection_details['fields']\n\nfor field in collection_fields:\n if fields.get(field['slug']) and field['type'] == 'MultiReference':\n fields[field['slug']] = fields[field['slug']].split(',')\n\nfiltered_fields = {key: value for key, value in fields.items() if value is not None and value != ''}\n\nbody_data['fieldData'].update(filtered_fields)\n\nstatus = dynamic.get('status') or 'draft'\nsuffix = 'live' if status == 'live' else ''\n\nresponse = requests.post(f'https://api.webflow.com/v2/collections/{collection_id}/items/{suffix}', headers = headers,\n data = json.dumps(body_data))\n\nif response.status_code != 202:\n raise Exception(\n f'Failed to create the collection item. Status code: {response.status_code}, Message: {response.text}, Body: {body_data}')\n\nresult = response.json()\n\nreturn result",
+          "chainError": "",
+          "lambda_function": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": 13,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "google_docs",
+    "action": "Create Document",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import sys\nimport subprocess\n\n# pip install custom package to /tmp/ and add to path\nsubprocess.call(\n \"pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib -t /tmp/ --no-cache-dir\".split(),\n stdout=subprocess.DEVNULL,\n stderr=subprocess.DEVNULL,\n)\nsys.path.insert(1, \"/tmp/\")\n\nfrom google.oauth2.credentials import Credentials\nfrom googleapiclient.discovery import build\nfrom googleapiclient.http import MediaIoBaseUpload\nimport io\nimport markdown\nimport json\nimport requests\nfrom bs4 import BeautifulSoup\n\nif not dynamic:\n dynamic = {}\n\ndocument_text__markdown_ = dynamic.get('document_text__markdown_')\npermissions = dynamic.get('permissions')\nparent_folder = dynamic.get('folder')\ntitle = dynamic.get('title')\ntoken = integration['token']\nrefresh_token = integration[\"refresh_token\"]\nclient_id = \"71643213879-82v9a3fcmh17tifs7ac08cd1bi4re4uq.apps.googleusercontent.com\"\nclient_secret = \"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\"\n\nif not title:\n raise Exception(\"Title is not set\")\n\nif not document_text__markdown_:\n raise Exception(\"Document Text is not set\")\n\n\ndef move_file_to_folder(file_id, folder_id, token):\n \"Move the file to the desired folder.\"\n headers = {\"Authorization\": f\"Bearer {token}\"}\n params = {\n \"addParents\": folder_id,\n \"removeParents\": get_current_parent(file_id, token),\n \"fields\": \"id, parents\",\n }\n response = requests.patch(\n f\"https://www.googleapis.com/drive/v3/files/{file_id}\",\n headers=headers,\n params=params,\n )\n response.raise_for_status()\n return response.json()\n\n\ndef get_current_parent(file_id, token):\n \"\"\"Get the current parent folder of the file.\"\"\"\n headers = {\"Authorization\": f\"Bearer {token}\"}\n response = requests.get(\n f\"https://www.googleapis.com/drive/v3/files/{file_id}?fields=parents\",\n headers=headers,\n )\n response.raise_for_status()\n return \",\".join(response.json().get(\"parents\", []))\n\n\ndef get_google_doc_service(token, refresh_token, client_id, client_secret):\n # Initialize the credentials and the Drive API client\n creds = Credentials(\n token=token,\n refresh_token=refresh_token,\n token_uri=\"https://oauth2.googleapis.com/token\",\n client_id=client_id,\n client_secret=client_secret,\n )\n\n return build(\"drive\", \"v3\", credentials=creds)\n\n\ndef upload_html_as_google_doc(service, html_content, title):\n metadata = {\"name\": title, \"mimeType\": \"application/vnd.google-apps.document\"}\n\n # Content of the file to be uploaded\n file_content = html_content\n file_io = io.BytesIO(file_content.encode(\"utf-8\"))\n\n media = MediaIoBaseUpload(file_io, mimetype=\"text/html\", resumable=True)\n\n # Upload the file\n file = (\n service.files().create(body=metadata, media_body=media, fields=\"id\").execute()\n )\n\n return file.get(\"id\")\n\n\ndef make_document_public(service, doc_id):\n \"\"\"\n Make the document viewable by anyone with the link.\n \"\"\"\n permission_body = {\"type\": \"anyone\", \"role\": \"reader\"}\n return service.permissions().create(fileId=doc_id, body=permission_body).execute()\n\n\n# Convert Markdown to HTML\nhtml_content = markdown.markdown(\n document_text__markdown_,\n extensions=[\n \"markdown.extensions.tables\",\n \"markdown.extensions.extra\",\n \"markdown.extensions.nl2br\",\n ],\n)\n\nsoup = BeautifulSoup(html_content, \"lxml\")\n\n# Find all \u003cp\u003e tags in the HTML\np_tags = soup.find_all(\"p\")\n\n# Set of title tags to ignore when inserting \u003cbr\u003e\ntitle_tags = {\"h1\", \"h2\", \"h3\", \"h4\", \"h5\", \"h6\"}\n\n# Iterate through the \u003cp\u003e tags\nfor p_tag in p_tags:\n # Get the previous sibling of the current \u003cp\u003e tag\n prev_sibling = p_tag.find_previous_sibling()\n\n # Insert \u003cbr\u003e only if the previous sibling exists and is not a title tag\n if prev_sibling and prev_sibling.name not in title_tags:\n # Create a \u003cbr\u003e tag\n br_tag = soup.new_tag(\"br\")\n\n # Insert the \u003cbr\u003e tag before the \u003cp\u003e tag\n p_tag.insert_before(br_tag)\n\n\nhtml_content = str(soup)\n\ntry:\n service = get_google_doc_service(token, refresh_token, client_id, client_secret)\n\n document_id = upload_html_as_google_doc(service, html_content, title)\n\n if document_id and parent_folder:\n move_file_to_folder(document_id, parent_folder, token)\n\n if permissions == 'Public':\n make_document_public(service, document_id)\n\n if not document_id:\n raise Exception(\"Failed to upload document\")\n\n return {\"file_url\": f\"https://docs.google.com/document/d/{document_id}/edit\"}\n\nexcept requests.exceptions.RequestException as e:\n raise Exception(e.response.text)\n",
+          "errors": {},
+          "lambda_function": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "b8c7eab0-7906-4a45-9e4d-9ec6eee88647",
+        "action_id": 11,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow_v2",
+    "action": "List Collections",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\n\napi_key = integration.get('api_key') or integration.get('token')\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept': 'application/json'\n}\n\nsite = dynamic.get('site', None)\n\nif not site:\n raise Exception('Site not selected')\n\nresponse = requests.get(f'https://api.webflow.com/v2/sites/{site}/collections', headers=headers)\n\nif response.status_code != 200:\n raise Exception(f'Failed to fetch collections. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()['collections']\n\nreturn result\n",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": 16,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "google_sheets",
+    "action": "Create Spreadsheet",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\ndocument_text__markdown_ = dynamic.get('document_text__markdown_', None)\nparent_folder = dynamic.get('folder', None)\ntitle = dynamic.get('title', None)\ndata = dynamic.get('data', None)\n\nif not title:\n raise Exception('Title is required')\n\nif not data:\n raise Exception('JSON Data is required')\n \nif not isinstance(data, list):\n try:\n data = json.loads(data)\n except:\n raise Exception('JSON Data must be a JSON array')\n\nif not isinstance(data, list):\n raise Exception('JSON Data must be a JSON array')\n \nif len(data) == 0:\n raise Exception('JSON Data is an empty array')\n\ndef move_file_to_folder(file_id, folder_id, token):\n \"\"\"Move the file to the desired folder.\"\"\"\n headers = {'Authorization': f\"Bearer {token}\"}\n params = {\n 'addParents': folder_id,\n 'removeParents': get_current_parent(file_id, token),\n 'fields': 'id, parents',\n }\n response = requests.patch(\n f'https://www.googleapis.com/drive/v3/files/{file_id}',\n headers=headers,\n params=params,\n )\n response.raise_for_status()\n return response.json()\n\n\ndef get_current_parent(file_id, token):\n \"\"\"Get the current parent folder of the file.\"\"\"\n headers = {'Authorization': f\"Bearer {token}\"}\n response = requests.get(\n f'https://www.googleapis.com/drive/v3/files/{file_id}?fields=parents',\n headers=headers,\n )\n response.raise_for_status()\n return \",\".join(response.json().get('parents', []))\n\n\ndef create_sheet(token):\n headers = {'Authorization': f\"Bearer {token}\", 'Content-Type': 'application/json'}\n response = requests.post(\n 'https://sheets.googleapis.com/v4/spreadsheets',\n headers=headers,\n json={\"properties\": {\"title\": title}},\n )\n response.raise_for_status()\n return response.json()['spreadsheetId']\n\ntoken = integration['token'] # Replace with your token\n\ntry:\n sheet_id = create_sheet(token)\n\n headers = data[0].keys()\n values = [list(headers)]\n\n for row in data:\n values.append([row.get(header, '') for header in headers])\n\n body = {\n \"requests\": [\n {\n \"updateCells\": {\n \"start\": {\"sheetId\": 0, \"rowIndex\": 0, \"columnIndex\": 0},\n \"rows\": [\n {\n \"values\": [\n {\"userEnteredValue\": {\"stringValue\": str(cell) if cell is not None else \"\"}}\n for cell in row\n ]\n } for row in values\n ],\n \"fields\": \"userEnteredValue\"\n }\n }\n ]\n }\n\n headers = {'Authorization': f\"Bearer {token}\", 'Content-Type': 'application/json'}\n\n response = requests.post(\n f'https://sheets.googleapis.com/v4/spreadsheets/{sheet_id}:batchUpdate',\n headers=headers,\n json=body\n )\n response.raise_for_status()\n\n if parent_folder:\n move_file_to_folder(sheet_id, parent_folder, token)\n\n return f\"https://docs.google.com/spreadsheets/d/{sheet_id}/edit\"\n\nexcept requests.exceptions.RequestException as e:\n raise Exception(e.response.text)\n",
+          "errors": {},
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "36b2b1c2-6791-46fa-a244-9121c33dcf35",
+        "action_id": 15,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "gmail",
+    "action": "Send email",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "from email.mime.text import MIMEText\nimport base64\nimport requests\n\ntoken = integration['token']\n\n\"\"\"\nSend an email using the Gmail API.\n\ntoken: str - The authorization token for the API.\nto: str - The recipient's email address.\nsubject: str - The subject of the email.\nbody: str - The body of the email.\n\"\"\"\n# Create a MIMEText object\nmessage = MIMEText(body)\nmessage['to'] = to\nmessage['subject'] = subject\n\n# Encode the message in base64\nraw = base64.urlsafe_b64encode(message.as_bytes())\nraw = raw.decode()\n\n# Create the body for the API request\nbody = {'raw': raw}\n\nheaders = {\n 'Authorization': f'Bearer {token}',\n 'Content-Type': 'application/json',\n 'Accept': 'application/json'\n}\n\n# Send the email\nresponse = requests.post(\n 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',\n headers=headers,\n json=body\n)\n\n# Check for errors\nresponse.raise_for_status()\nreturn response.json()"
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Recipient (Email Address)",
+        "name": "to",
+        "hint": "",
+        "required": true,
+        "group_id": "b4cb1ca1-ea02-4a36-b147-1b60870f81d4",
+        "action_id": "",
+        "placeholder": "name@company.com",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Subject",
+        "name": "subject",
+        "hint": "",
+        "required": true,
+        "group_id": "b4cb1ca1-ea02-4a36-b147-1b60870f81d4",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "long_text",
+        "label": "Message",
+        "name": "body",
+        "hint": "",
+        "required": false,
+        "group_id": "b4cb1ca1-ea02-4a36-b147-1b60870f81d4",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "contentful",
+    "action": "Create Entry",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport time\n\nAPI_KEY = integration['api_key']\n\ndef req_get(url, headers = {}, max_retries = 10):\n for retry in range(max_retries):\n response = requests.get(url, headers=headers)\n\n # If rate limited, wait for a bit before retrying. The wait time increases with each retry.\n if response.status_code == 429:\n time.sleep(2 ** retry)\n else:\n break\n\n return response\n\n\nheaders = {\n 'Authorization': f'Bearer {API_KEY}',\n 'Content-Type': 'application/vnd.contentful.management.v1+json'\n}\n\nspace_id = dynamic['space']\nenvironment = dynamic['environment']\ncontent_type_id = dynamic['content_type']\n\nresponse = req_get(f'https://api.contentful.com/spaces/{space_id}/environments/{environment}/content_types/{content_type_id}', headers=headers)\n\nif response.status_code != 200:\n raise Exception(f'Failed to fetch content type. Status code: {response.status_code}, Message: {response.text}')\n\nreturn response.json()['fields']\n",
+          "chainError": ""
+        }
+      },
+      {
+        "name": "step_2",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "javascript",
+          "function": "const DEFAULT_LOCALE = 'en-US';\n\nconst locale = dynamic.locale || DEFAULT_LOCALE;\n\nconst fieldDefinitions = step_1.output;\n\nconst prefix = 'customField.';\n\nconst fieldListPromise = Object.entries(dynamic)\n .filter(([key]) =\u003e key.startsWith(prefix))\n .map(([key, value]) =\u003e [key.substring(prefix.length), value])\n .map(async ([key, value]) =\u003e {\n try {\n if (fieldDefinitions.find(field =\u003e field.id === key)?.type === 'RichText') {\n return [key, await richTextFromMarkdown(value)]\n }\n\n return [key, value];\n } catch (error) {\n throw new Error(`Error converting markdown to rich text for field ${key} with value ${value}: ${error.message}`);\n }\n })\n\nconst fields = Object.fromEntries(await Promise.all(fieldListPromise));\n\nconst localizableFields = Object.fromEntries(\n Object.entries(fields)\n .filter(([key, value]) =\u003e {\n const field = fieldDefinitions.find(field =\u003e field.id === key);\n \n return field?.type === 'RichText' || typeof value === 'string' || fieldDefinitions.find(field =\u003e field.id === key)?.localized === true;\n })\n .map(([key, value]) =\u003e [key, { [locale]: value }])\n);\n\nconst linkedEntryFields = Object.fromEntries(\n Object.entries(fields)\n .filter(([key, value]) =\u003e {\n const field = fieldDefinitions.find(field =\u003e field.id === key);\n\n return field?.type === 'Link' \u0026\u0026 field?.linkType === 'Entry';\n })\n .map(([key, value]) =\u003e\n [key, { [locale]: { sys: { type: 'Link', linkType: 'Entry', id: value } } }]\n ));\n\nconst linkedAssetFields = Object.fromEntries(\n Object.entries(fields)\n .filter(([key, value]) =\u003e {\n const field = fieldDefinitions.find(field =\u003e field.id === key);\n\n return field?.type === 'Link' \u0026\u0026 field?.linkType === 'Asset';\n })\n .map(([key, value]) =\u003e [key, { [locale]: { sys: { type: 'Link', linkType: 'Asset', id: value } } }]))\n\nconst arrayOfLinkedEntriesFields = Object.fromEntries(\n Object.entries(fields).filter(([key, value]) =\u003e {\n const field = fieldDefinitions.find(field =\u003e field.id === key);\n\n return field?.type === 'Array' \u0026\u0026 field?.items?.type === 'Link' \u0026\u0026 field?.items?.linkType === 'Entry';\n }).map(([key, value = '']) =\u003e\n [key, { [locale]: value.split(',').filter(Boolean).map(id =\u003e ({ sys: { type: 'Link', linkType: 'Entry', id } })) }]\n ));\n\nconst arrayOfLinkedAssetsFields = Object.fromEntries(\n Object.entries(fields).filter(([key, value]) =\u003e {\n const field = fieldDefinitions.find(field =\u003e field.id === key);\n\n return field?.type === 'Array' \u0026\u0026 field?.items?.type === 'Link' \u0026\u0026 field?.items?.linkType === 'Asset';\n }).map(([key, value = '']) =\u003e\n [key, { [locale]: value.split(',').filter(Boolean).map(id =\u003e ({ sys: { type: 'Link', linkType: 'Asset', id } })) }]\n ));\n\nreturn { ...fields, ...localizableFields, ...linkedEntryFields, ...linkedAssetFields, ...arrayOfLinkedEntriesFields, ...arrayOfLinkedAssetsFields }\n",
+          "errors": {},
+          "chainError": ""
+        }
+      },
+      {
+        "name": "step_3",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\nspace_id = dynamic['space']\nenvironment = dynamic['environment']\ncontent_type_id = dynamic['content_type']\n\napi_key = integration['api_key']\n\nheaders = {\n 'Authorization': f'Bearer {api_key}',\n 'Content-Type': 'application/vnd.contentful.management.v1+json',\n 'X-Contentful-Content-Type': content_type_id\n}\n\nbody_data = { 'fields': step_2[\"output\"] }\n\nresponse = requests.post(f'https://api.contentful.com/spaces/{space_id}/environments/{environment}/entries', headers = headers,\n data = json.dumps(body_data))\n\nif response.status_code != 201:\n raise Exception(\n f'Failed to create entry. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nreturn result\n",
+          "errors": {},
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "b4f885ea-a009-43bc-ba45-e874b596bc8c",
+        "action_id": 22,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "contentful",
+    "action": "Create Entry (JSON)",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\napi_key = integration['api_key']\n\nheaders = {\n 'Authorization': f'Bearer {api_key}',\n 'Content-Type': 'application/vnd.contentful.management.v1+json',\n 'X-Contentful-Content-Type': content_type_id\n}\n\n\nif not isinstance(body, dict):\n try:\n body = { 'fields': json.loads(body) }\n except:\n raise Exception(f'Failed to parse JSON body. Make sure you are sending a valid JSON.')\n\nresponse = requests.post(f'https://api.contentful.com/spaces/{space_id}/environments/{environment}/entries', headers = headers,\n data = json.dumps(body))\n\nif response.status_code != 201:\n raise Exception(\n f'Failed to create entry. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nreturn result\n",
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Space ID",
+        "name": "space_id",
+        "hint": "The ID of your contentful space. e.g. yadj1kx9rmg0",
+        "required": true,
+        "group_id": "ef4e7442-9b6d-4e1c-b97b-2cc22bb7368c",
+        "action_id": "",
+        "placeholder": "yadj1kx9rmg0",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Environment",
+        "name": "environment",
+        "hint": "The name of your environment. This is usually master",
+        "required": true,
+        "group_id": "ef4e7442-9b6d-4e1c-b97b-2cc22bb7368c",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Content Type ID",
+        "name": "content_type_id",
+        "hint": "The ID of the Content Type you are going to create.",
+        "required": true,
+        "group_id": "ef4e7442-9b6d-4e1c-b97b-2cc22bb7368c",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "json",
+        "label": "JSON",
+        "name": "body",
+        "hint": "A JSON object containing the fields for your entry\n\ne.g.\n\n{\n \"title\": {\n \"en-US\": \"Hello, World!\"\n },\n \"body\": {\n \"en-US\": \"Bacon is healthy!\"\n }\n}\n\nSee https://www.contentful.com/developers/docs/references/content-management-api/#/reference/entries/entry",
+        "required": true,
+        "group_id": "ef4e7442-9b6d-4e1c-b97b-2cc22bb7368c",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "contentful",
+    "action": "List Entries",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport time\n\napi_key = integration['api_key']\n\nheaders = {\n 'Authorization': f'Bearer {api_key}',\n 'Content-Type': 'application/vnd.contentful.management.v1+json',\n}\n\ndef req_get(url, headers = {}, max_retries = 10):\n for retry in range(max_retries):\n response = requests.get(url, headers=headers)\n\n # If rate limited, wait for a bit before retrying. The wait time increases with each retry.\n if response.status_code == 429:\n time.sleep(2 ** retry)\n else:\n break\n\n return response\n\ndef list_entries(skip = 0, limit = 100):\n response = req_get(f'https://api.contentful.com/spaces/{space_id}/environments/{environment}/entries?skip={skip}\u0026limit={limit}', headers = headers)\n data = response.json()\n\n if response.status_code != 200:\n raise Exception(\n f'Failed to fetch entries. Status code: {response.status_code}, Message: {response.text}')\n\n if len(data['items']) == data['limit']:\n return data['items'] + list_entries(skip + limit, limit)\n\n return data['items']\n\n\nreturn list_entries()\n"
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Space ID",
+        "name": "space_id",
+        "hint": "The ID of your contentful space. e.g. yadj1kx9rmg0",
+        "required": true,
+        "group_id": "1d15af47-7ca0-41f6-bf38-304d77d74e32",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Environment",
+        "name": "environment",
+        "hint": "The name of your environment. This is usually `master`",
+        "required": false,
+        "group_id": "1d15af47-7ca0-41f6-bf38-304d77d74e32",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "contentful",
+    "action": "Get Entry",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport time\n\napi_key = integration['api_key']\n\nheaders = {\n 'Authorization': f'Bearer {api_key}',\n 'Content-Type': 'application/vnd.contentful.management.v1+json',\n}\n\ndef req_get(url, headers = {}, max_retries = 10):\n for retry in range(max_retries):\n response = requests.get(url, headers=headers)\n\n # If rate limited, wait for a bit before retrying. The wait time increases with each retry.\n if response.status_code == 429:\n time.sleep(2 ** retry)\n else:\n break\n\n return response\n\nresponse = req_get(f'https://api.contentful.com/spaces/{space_id}/environments/{environment}/entries/{entry_id}', headers = headers)\ndata = response.json()\n\nif response.status_code != 200:\n raise Exception(\n f'Failed to fetch entries. Status code: {response.status_code}, Message: {response.text}')\n\nreturn response.json()\n",
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Space ID",
+        "name": "space_id",
+        "hint": "The ID of your contentful space. e.g. yadj1kx9rmg0",
+        "required": true,
+        "group_id": "4a4d053d-49b1-4bd0-8308-d8735bcf1fe0",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Environment",
+        "name": "environment",
+        "hint": "The name of your environment. This is usually `master`",
+        "required": true,
+        "group_id": "4a4d053d-49b1-4bd0-8308-d8735bcf1fe0",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Entry ID",
+        "name": "entry_id",
+        "hint": "The ID of the entry you want to retreive",
+        "required": true,
+        "group_id": "4a4d053d-49b1-4bd0-8308-d8735bcf1fe0",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "contentful",
+    "action": "Update Entry (JSON)",
+    "definition": [
+      {
+        "name": "step_3",
+        "type": "code",
+        "disabled": false,
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "canEnable": true,
+          "note": "",
+          "language": "python",
+          "function": "import requests\nimport time\n\napi_key = integration[\"api_key\"]\n\nheaders = {\n 'Authorization': f'Bearer {api_key}',\n 'Content-Type': 'application/vnd.contentful.management.v1+json',\n}\n\ndef req_get(url, headers = {}, max_retries = 10):\n for retry in range(max_retries):\n response = requests.get(url, headers=headers)\n\n # If rate limited, wait for a bit before retrying. The wait time increases with each retry.\n if response.status_code == 429:\n time.sleep(2 ** retry)\n else:\n break\n\n return response\n\nresponse = req_get(f'https://api.contentful.com/spaces/{space_id}/environments/{environment}/entries/{entry_id}', headers = headers)\ndata = response.json()\n\nif response.status_code != 200:\n raise Exception(\n f'Failed to fetch entries. Status code: {response.status_code}, Message: {response.text}')\n\nreturn response.json()\n",
+          "soft_fail": false,
+          "lambda_function": "",
+          "chainError": "",
+          "errors": {}
+        }
+      },
+      {
+        "name": "step_1",
+        "type": "code",
+        "disabled": false,
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "canEnable": true,
+          "note": "",
+          "language": "python",
+          "function": "import requests\nimport json\n\napi_key = integration[\"api_key\"]\ncurrent_version = step_3['output']['sys']['version']\n\nheaders = {\n 'Authorization': f'Bearer {api_key}',\n 'Content-Type': 'application/vnd.contentful.management.v1+json',\n 'X-Contentful-Content-Type': content_type_id,\n 'X-Contentful-Version': str(current_version)\n}\n\nif isinstance(body, dict):\n request_body = { 'fields': body }\nelse:\n raise Exception(f'Failed to parse JSON body. Make sure you are sending a valid JSON.')\n \n# return body.__class__.__name__\nurl = f'https://api.contentful.com/spaces/{space_id}/environments/{environment}/entries/{entry_id}'\n\nresponse = requests.put(url, headers = headers,\n json = request_body)\n\nif response.status_code != 200:\n raise Exception(\n f'Failed to create entry. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nreturn result\n",
+          "chainError": "",
+          "lambda_function": "",
+          "errors": {},
+          "soft_fail": false
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "43a4697e-93cc-436f-8520-294729a5dcb8",
+        "action_id": "",
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Space ID",
+        "name": "space_id",
+        "hint": "The ID of your contentful space. e.g. yadj1kx9rmg0",
+        "required": true,
+        "group_id": "43a4697e-93cc-436f-8520-294729a5dcb8",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Environment",
+        "name": "environment",
+        "hint": "The name of your environment. This is usually `master`",
+        "required": true,
+        "group_id": "43a4697e-93cc-436f-8520-294729a5dcb8",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Content Type ID",
+        "name": "content_type_id",
+        "hint": "The ID of the Content Type you are going to create.",
+        "required": true,
+        "group_id": "43a4697e-93cc-436f-8520-294729a5dcb8",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Entry ID",
+        "name": "entry_id",
+        "hint": "The ID of the entry you want to update",
+        "required": true,
+        "group_id": "43a4697e-93cc-436f-8520-294729a5dcb8",
+        "action_id": "",
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "json",
+        "label": "Fields",
+        "name": "body",
+        "hint": "A JSON object containing the fields to update\n\ne.g.\n\n{\n \"title\": {\n \"en-US\": \"Hello, World!\"\n },\n \"body\": {\n \"en-US\": \"Bacon is healthy!\"\n }\n}\n\nSee https://www.contentful.com/developers/docs/references/content-management-api/#/reference/entries/entry",
+        "required": true,
+        "group_id": "43a4697e-93cc-436f-8520-294729a5dcb8",
+        "action_id": "",
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow_v2",
+    "action": "List Collection Items",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport time\n\ndef req_get(url, headers = {}, max_retries = 10):\n for retry in range(max_retries):\n response = requests.get(url, headers=headers)\n\n # If rate limited, wait for a bit before retrying. The wait time increases with each retry.\n if response.status_code == 429:\n time.sleep(2 ** retry)\n else:\n break\n\n return response\n\n\napi_key = integration.get('api_key') or integration.get('token')\n\ndef get_collection_items(collection_id, offset=0):\n url = f'https://api.webflow.com/v2/collections/{collection_id}/items?limit=100'\n\n headers = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n }\n\n response = req_get(url, headers=headers)\n\n if response.status_code != 200:\n raise Exception(\n f'Failed to fetch collection items. Status code: {response.status_code}, Message: {response.text}'\n )\n\n result = response.json()\n\n items = result['items']\n\n if len(items) \u003c (result['pagination']['total'] - offset):\n items.extend(get_collection_items(collection_id, offset + 100))\n\n return items\n\ncollection_id = dynamic['collection']\n\nif not collection_id:\n raise Exception('Collection is required')\n\nreturn get_collection_items(collection_id)\n",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "5938fdeb-a56f-4698-85bb-987d00774f1f",
+        "action_id": 18,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow_v2",
+    "action": "Update Collection Item (JSON)",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\napi_key = integration.get('api_key') or integration.get('token')\n\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n 'content-type': 'application/json'\n}\n\nif not isinstance(fields, dict):\n raise ValueError(\"Fields is not a valid JSON\")\n\nbody_data = {\n \"isArchived\": False,\n \"isDraft\": False,\n \"fieldData\": fields\n}\n\nresponse = requests.patch(f'https://api.webflow.com/v2/collections/{collection_id}/items/{item_id}', headers = headers,\n data = json.dumps(body_data))\n\nif response.status_code != 200:\n raise Exception(\n f'Failed to update the collection item. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nif publish == 'Yes':\n publish_res = requests.post(f'https://api.webflow.com/v2/collections/{collection_id}/items/publish', headers=headers,\n data = json.dumps({ \"itemIds\": [item_id]}))\n \n if publish_res.status_code != 202:\n raise Exception(\n f'Failed to publish the collection item. Status code: {publish_res.status_code}, Message: {publish_res.text}')\n\nreturn result\n",
+          "errors": {},
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Collection ID",
+        "name": "collection_id",
+        "hint": "Enter your Webflow Collection ID here. You can find this by heading over to the CMS section of your Webflow site, clicking on the Collection and then Settings. You will see the Collection ID at the top, it looks like 64da9a472f587cea23bb354.",
+        "required": true,
+        "group_id": "a453acb2-6cd8-4b16-9669-44795e9ba171",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Item ID",
+        "name": "item_id",
+        "hint": "Enter your Item ID here. You can find this by heading over to the CMS section of your Webflow site, clicking on the Collection and then the Item. You will see the Item ID as a property, it looks like 6504b12096a999eb2b79ceae.",
+        "required": true,
+        "group_id": "a453acb2-6cd8-4b16-9669-44795e9ba171",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "json",
+        "label": "Fields",
+        "name": "fields",
+        "hint": "Additional fields for the item as a JSON object {\"key\": \"value\"}. These need to match the fields you have in your collection exactly, using their API name (e.g. body, not Body). You can fetch your fields here : https://developers.webflow.com/reference/collection-details",
+        "required": true,
+        "group_id": "a453acb2-6cd8-4b16-9669-44795e9ba171",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "single_select",
+        "label": "Publish",
+        "name": "publish",
+        "hint": "Publish changes live",
+        "required": true,
+        "group_id": "a453acb2-6cd8-4b16-9669-44795e9ba171",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": [
+          "No"
+        ],
+        "options": [
+          "Yes",
+          "No"
+        ]
+      }
+    ]
+  },
+  {
+    "integration": "notion",
+    "action": "Create Database",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\nNOTION_API_KEY = integration['token']\n\n# Define the endpoint URL and headers\nurl = \"https://api.notion.com/v1/databases/\"\nheaders = {\n \"Authorization\": \"Bearer {}\".format(NOTION_API_KEY),\n \"Content-Type\": \"application/json\",\n \"Notion-Version\": \"2022-06-28\",\n}\n\nif not dynamic.get('title'):\n raise ValueError('Title is required')\n\nif not dynamic.get('properties'):\n raise ValueError('Properties is required')\n \nif not isinstance(dynamic.get('properties'), dict):\n try:\n dynamic['properties'] = json.loads(dynamic['properties'])\n except:\n raise ValueError('Properties must be a JSON')\n\n# Define the request payload\ndata = {\n \"parent\": {\"page_id\": dynamic['page']},\n \"title\": [\n {\n \"type\": \"text\",\n \"text\": {\n \"content\": dynamic['title'],\n \"link\": None\n }\n }\n ],\n \"properties\": dynamic['properties']\n}\n\n# Send the POST request\nresponse = requests.post(url, headers=headers, json=data)\nresponse.raise_for_status()\nreturn response.json()\n",
+          "errors": {},
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "0b6e6d92-0829-4513-80a9-d7626a340893",
+        "action_id": 32,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "notion",
+    "action": "Create Database Item",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\nNOTION_API_KEY = integration['token']\n\n# Define the endpoint URL and headers\nurl = \"https://api.notion.com/v1/pages\"\nheaders = {\n \"Authorization\": \"Bearer {}\".format(NOTION_API_KEY),\n \"Content-Type\": \"application/json\",\n \"Notion-Version\": \"2022-06-28\",\n}\n\nif not dynamic.get('database'):\n raise ValueError('Database is required')\n\nif not dynamic.get('fields'):\n raise ValueError('Fields is required')\n\nif not isinstance(dynamic.get('fields'), dict):\n try:\n dynamic['fields'] = json.loads(dynamic['fields'])\n except:\n raise ValueError('Fields must be a JSON')\n\n# Define the request payload\ndata = {\n \"parent\": { \"database_id\": dynamic['database'] },\n \"properties\": dynamic['fields']\n}\n\n# Send the POST request\nresponse = requests.post(url, headers=headers, json=data)\nresponse.raise_for_status()\nreturn response.json()\n",
+          "errors": {},
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "75a5eff0-b049-4f73-a2c8-aa51b37d3779",
+        "action_id": 35,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow_oauth",
+    "action": "Create Collection Item",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\ncollection_id = dynamic['collection']\n\napi_key = integration.get('api_key') or integration.get('token')\n\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n 'content-type': 'application/json'\n}\n\nbody_data = {\n \"isArchived\": False,\n \"isDraft\": False,\n \"fieldData\": {}\n}\n\nprefix = \"custom_field_\"\nfields = { k[len(prefix):]: v for k, v in dynamic.items() if k.startswith(prefix) }\n\n\ndef req_get(url, headers = {}, max_retries = 10):\n for retry in range(max_retries):\n response = requests.get(url, headers=headers)\n\n # If rate limited, wait for a bit before retrying. The wait time increases with each retry.\n if response.status_code == 429:\n time.sleep(2 ** retry)\n else:\n break\n\n return response\n\ndef get_collection_details():\n headers = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n 'content-type': 'application/json'\n }\n\n response = req_get(f'https://api.webflow.com/v2/collections/{collection_id}', headers = headers)\n\n if response.status_code != 200:\n raise Exception(\n f'Failed to fetch collection details. Status code: {response.status_code}, Message: {response.text}')\n\n result = response.json()\n\n return result\n\ncollection_details = get_collection_details()\ncollection_fields = collection_details['fields']\n\nfor field in collection_fields:\n if fields.get(field['slug']) and field['type'] == 'MultiReference':\n fields[field['slug']] = fields[field['slug']].split(',')\n\nfiltered_fields = {key: value for key, value in fields.items() if value is not None and value != ''}\n\nbody_data['fieldData'].update(filtered_fields)\n\nstatus = dynamic.get('status') or 'draft'\nsuffix = 'live' if status == 'live' else ''\n\nresponse = requests.post(f'https://api.webflow.com/v2/collections/{collection_id}/items/{suffix}', headers = headers,\n data = json.dumps(body_data))\n\nif response.status_code != 202:\n raise Exception(\n f'Failed to create the collection item. Status code: {response.status_code}, Message: {response.text}, Body: {body_data}')\n\nresult = response.json()\n\nreturn result",
+          "chainError": "",
+          "lambda_function": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": 13,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow_oauth",
+    "action": "List Collections",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\n\napi_key = integration.get('api_key') or integration.get('token')\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept': 'application/json'\n}\n\nsite = dynamic.get('site', None)\n\nif not site:\n raise Exception('Site not selected')\n\nresponse = requests.get(f'https://api.webflow.com/v2/sites/{site}/collections', headers=headers)\n\nif response.status_code != 200:\n raise Exception(f'Failed to fetch collections. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()['collections']\n\nreturn result\n",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": 16,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow_oauth",
+    "action": "List Collection Items",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport time\n\ndef req_get(url, headers = {}, max_retries = 10):\n for retry in range(max_retries):\n response = requests.get(url, headers=headers)\n\n # If rate limited, wait for a bit before retrying. The wait time increases with each retry.\n if response.status_code == 429:\n time.sleep(2 ** retry)\n else:\n break\n\n return response\n\n\napi_key = integration.get('api_key') or integration.get('token')\n\ndef get_collection_items(collection_id, offset=0):\n url = f'https://api.webflow.com/v2/collections/{collection_id}/items?limit=100'\n\n headers = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n }\n\n response = req_get(url, headers=headers)\n\n if response.status_code != 200:\n raise Exception(\n f'Failed to fetch collection items. Status code: {response.status_code}, Message: {response.text}'\n )\n\n result = response.json()\n\n items = result['items']\n\n if len(items) \u003c (result['pagination']['total'] - offset):\n items.extend(get_collection_items(collection_id, offset + 100))\n\n return items\n\ncollection_id = dynamic['collection']\n\nif not collection_id:\n raise Exception('Collection is required')\n\nreturn get_collection_items(collection_id)\n",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "5938fdeb-a56f-4698-85bb-987d00774f1f",
+        "action_id": 18,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "webflow_oauth",
+    "action": "Update Collection Item (JSON)",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": ""
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport json\n\napi_key = integration.get('api_key') or integration.get('token')\n\nheaders = {\n 'Authorization': 'Bearer ' + api_key,\n 'accept-version': '1.0.0',\n 'accept': 'application/json',\n 'content-type': 'application/json'\n}\n\nif not isinstance(fields, dict):\n raise ValueError(\"Fields is not a valid JSON\")\n\nbody_data = {\n \"isArchived\": False,\n \"isDraft\": False,\n \"fieldData\": fields\n}\n\nresponse = requests.patch(f'https://api.webflow.com/v2/collections/{collection_id}/items/{item_id}', headers = headers,\n data = json.dumps(body_data))\n\nif response.status_code != 200:\n raise Exception(\n f'Failed to update the collection item. Status code: {response.status_code}, Message: {response.text}')\n\nresult = response.json()\n\nif publish == 'Yes':\n publish_res = requests.post(f'https://api.webflow.com/v2/collections/{collection_id}/items/publish', headers=headers,\n data = json.dumps({ \"itemIds\": [item_id]}))\n \n if publish_res.status_code != 202:\n raise Exception(\n f'Failed to publish the collection item. Status code: {publish_res.status_code}, Message: {publish_res.text}')\n\nreturn result\n",
+          "errors": {},
+          "chainError": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Collection ID",
+        "name": "collection_id",
+        "hint": "Enter your Webflow Collection ID here. You can find this by heading over to the CMS section of your Webflow site, clicking on the Collection and then Settings. You will see the Collection ID at the top, it looks like 64da9a472f587cea23bb354.",
+        "required": true,
+        "group_id": "a453acb2-6cd8-4b16-9669-44795e9ba171",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Item ID",
+        "name": "item_id",
+        "hint": "Enter your Item ID here. You can find this by heading over to the CMS section of your Webflow site, clicking on the Collection and then the Item. You will see the Item ID as a property, it looks like 6504b12096a999eb2b79ceae.",
+        "required": true,
+        "group_id": "a453acb2-6cd8-4b16-9669-44795e9ba171",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "json",
+        "label": "Fields",
+        "name": "fields",
+        "hint": "Additional fields for the item as a JSON object {\"key\": \"value\"}. These need to match the fields you have in your collection exactly, using their API name (e.g. body, not Body). You can fetch your fields here : https://developers.webflow.com/reference/collection-details",
+        "required": true,
+        "group_id": "a453acb2-6cd8-4b16-9669-44795e9ba171",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "single_select",
+        "label": "Publish",
+        "name": "publish",
+        "hint": "Publish changes live",
+        "required": true,
+        "group_id": "a453acb2-6cd8-4b16-9669-44795e9ba171",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": [
+          "No"
+        ],
+        "options": [
+          "Yes",
+          "No"
+        ]
+      }
+    ]
+  },
+  {
+    "integration": "strapi",
+    "action": "Get Collection Entries",
+    "definition": [
+      {
+        "name": "step_2",
+        "type": "code",
+        "config": {
+          "height": 0,
+          "width": 0,
+          "language": "python",
+          "function": "\nimport requests\nfrom urllib.parse import urlparse, urlunparse\n\ndef normalize_url(url):\n if not url.startswith((\"http://\", \"https://\")):\n url = \"https://\" + url\n \n parsed_url = urlparse(url)\n normalized_url = urlunparse((parsed_url.scheme, parsed_url.netloc, '', '', '', ''))\n return normalized_url\n\nnormalized_site_url = normalize_url(dynamic['site_url'])\n\n# Create base URL with pagination\nurl = f\"{normalized_site_url}/api/{dynamic['collection']}?pagination[pageSize]=100\"\ntoken = integration['api_key']\n\n# Append query string if present, removing leading \"?\" if it exists\nif 'query_string' in dynamic and dynamic['query_string']:\n query = dynamic['query_string'].lstrip('?') # Remove leading \"?\" if present\n url = f\"{url}\u0026{query}\" # Always use \u0026 since we know the URL already has parameters\n\n# Set up the headers with the Bearer token\nheaders = {\n \"Authorization\": f\"Bearer {token}\"\n}\n\n# Make the GET request\nresponse = requests.get(url, headers=headers)\n\n# Check for errors\nresponse.raise_for_status()\nreturn response.json()['data']",
+          "soft_fail": false,
+          "errors": {},
+          "chainError": "",
+          "lambda_function": ""
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": 44,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "strapi",
+    "action": "Create Collection Entry",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "height": 0,
+          "width": 0,
+          "language": "python",
+          "function": "\nimport requests\nimport json\nfrom urllib.parse import urlparse, urlunparse\n\ndef normalize_url(url):\n # Add https if no scheme is present\n if not url.startswith((\"http://\", \"https://\")):\n url = \"https://\" + url\n \n # Parse and normalize the URL (remove path, query, and fragment)\n parsed_url = urlparse(url)\n normalized_url = urlunparse((parsed_url.scheme, parsed_url.netloc, '', '', '', ''))\n return normalized_url\n\n# Normalize the base URL\nnormalized_site_url = normalize_url(dynamic['site_url'])\n\n# Construct the API endpoint URL\nurl = f\"{normalized_site_url}/api/{dynamic['collection']}\"\n\n# Append query string if present, handling both cases where it might start with \"?\"\nif 'query_string' in dynamic and dynamic['query_string']:\n separator = '' if dynamic['query_string'].startswith('?') else '?'\n url = f\"{url}{separator}{dynamic['query_string']}\"\n\n# Get the API token\ntoken = integration['api_key']\n\n# Set up the headers with the Bearer token\nheaders = {\n \"Authorization\": f\"Bearer {token}\"\n}\n\n# Prepare the request data\ndata = {\n 'data': json.loads(dynamic['data'])\n}\n\ntry:\n # Make the POST request\n response = requests.post(url, headers=headers, json=data)\n response.raise_for_status() # Raise an HTTPError for bad responses (4xx and 5xx)\n\n # Return the response data if successful\n return response.json()['data']\n\nexcept requests.exceptions.HTTPError as http_err:\n # Get error code and message as a JSON object if available\n error_code = response.status_code\n try:\n error_message = response.json() # Attempt to get JSON error response\n except ValueError:\n error_message = response.text # Fall back to text if JSON decoding fails\n \n # Return the error code and the actual error object or message\n return {\n 'error_code': error_code,\n 'error_message': error_message\n }",
+          "soft_fail": false,
+          "errors": {},
+          "chainError": "",
+          "lambda_function": ""
+        }
+      },
+      {
+        "name": "step_3",
+        "type": "conditional",
+        "config": {
+          "condition": "step_1.output.error_code",
+          "if_branch": [
+            {
+              "name": "step_5",
+              "type": "custom_error",
+              "config": {
+                "code": "REQUEST_ERROR",
+                "message": "{{ step_1.output.error_message }}",
+                "chainError": "",
+                "errors": {}
+              }
+            }
+          ],
+          "else_branch": []
+        }
+      },
+      {
+        "name": "step_6",
+        "type": "code",
+        "config": {
+          "language": "javascript",
+          "function": "return step_1.output",
+          "soft_fail": false,
+          "lambda_function": "",
+          "chainError": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": 46,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "strapi",
+    "action": "Update Collection Entry",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "height": 0,
+          "width": 0,
+          "language": "python",
+          "function": "import requests\nimport json\nfrom urllib.parse import urlparse, urlunparse\n\ndef normalize_url(url):\n if not url.startswith((\"http://\", \"https://\")):\n url = \"https://\" + url\n \n parsed_url = urlparse(url)\n normalized_url = urlunparse((parsed_url.scheme, parsed_url.netloc, '', '', '', ''))\n return normalized_url\n\nnormalized_site_url = normalize_url(dynamic['site_url'])\nurl = f\"{normalized_site_url}/api/{dynamic['collection']}/{dynamic['entry_id']}\"\ntoken = integration['api_key']\n\n# Append query string if present, handling both cases where it might start with \"?\"\nif 'query_string' in dynamic and dynamic['query_string']:\n separator = '' if dynamic['query_string'].startswith('?') else '?'\n url = f\"{url}{separator}{dynamic['query_string']}\"\n\n# Set up the headers with the Bearer token\nheaders = {\n \"Authorization\": f\"Bearer {token}\"\n}\n\ndata = {\n 'data': json.loads(dynamic['data'])\n}\n\nprint(url)\n\ntry:\n # Make the POST request\n response = requests.put(url, headers=headers, json=data)\n response.raise_for_status() # Raise an HTTPError for bad responses (4xx and 5xx)\n\n # Return the response data if successful\n return response.json()['data']\n\nexcept requests.exceptions.HTTPError as http_err:\n # Get error code and message as a JSON object if available\n error_code = response.status_code\n try:\n error_message = response.json() # Attempt to get JSON error response\n except ValueError:\n error_message = response.text # Fall back to text if JSON decoding fails\n \n # Return the error code and the actual error object or message\n return {\n 'error_code': error_code,\n 'error_message': error_message\n }",
+          "soft_fail": false,
+          "errors": {},
+          "chainError": "",
+          "lambda_function": ""
+        }
+      },
+      {
+        "name": "step_2",
+        "type": "conditional",
+        "config": {
+          "condition": "step_1.output.error_code",
+          "if_branch": [
+            {
+              "name": "step_4",
+              "type": "custom_error",
+              "config": {
+                "code": "REQUEST_ERROR",
+                "message": "{{ step_1.output.error_message }}",
+                "chainError": "",
+                "errors": {}
+              }
+            }
+          ],
+          "else_branch": []
+        }
+      },
+      {
+        "name": "step_6",
+        "type": "code",
+        "config": {
+          "language": "javascript",
+          "function": "return step_1.output",
+          "soft_fail": false,
+          "lambda_function": "",
+          "chainError": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": false,
+        "group_id": "no-group",
+        "action_id": 48,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "google_search_console",
+    "action": "Get Query Performance Overview",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code"
+        },
+        "config": {
+          "language": "python",
+          "function": "# inputs: integration -\u003e { token }\n# inputs: dynamic -\u003e { site }\n\nimport requests\nimport datetime\nfrom urllib.parse import quote\n\ndef fetch_search_console_data(start_date, end_date):\n site = quote(dynamic['site'], safe='')\n token = integration['token']\n gsc_url = f\"https://www.googleapis.com/webmasters/v3/sites/{site}/searchAnalytics/query\"\n\n headers = {\n \"Authorization\": f\"Bearer {token}\",\n \"Content-Type\": \"application/json\"\n }\n body = {\n \"startDate\": start_date,\n \"endDate\": end_date,\n \"dimensions\": [\"query\"],\n \"rowLimit\": 1000, # Request up to 1000 rows\n \"dimensionFilterGroups\": [\n {\n \"filters\": [\n {\n \"dimension\": \"page\",\n \"operator\": \"equals\",\n \"expression\": url\n }\n ]\n }\n ]\n }\n response = requests.post(gsc_url, headers=headers, json=body)\n if response.status_code == 200:\n return response.json()\n else:\n raise Exception(f\"API request failed: {response.status_code}, {response.text}\")\n\n\ndef fetch_url_queries():\n try:\n # 30 days ago\n start_date = (datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')\n end_date = datetime.datetime.now().strftime('%Y-%m-%d')\n\n # Fetch data from Google Search Console\n data = fetch_search_console_data(start_date, end_date)\n\n # Map data to queries\n queries = []\n for row in data.get('rows', []):\n queries.append({\n \"query\": row['keys'][0],\n \"clicks\": row['clicks'],\n \"impressions\": row['impressions'],\n \"ctr\": round(row['ctr'], 3),\n \"position\": round(row['position'], 3)\n })\n\n # Sort by clicks desc, then impressions desc\n queries.sort(key=lambda x: (-x['clicks'], -x['impressions']))\n\n # Keep top 100\n queries = queries[:100]\n\n return {\"queries\": queries}\n except Exception as e:\n return {\"error\": str(e)}\n\n\n# Example usage\nreturn fetch_url_queries()",
+          "soft_fail": false,
+          "lambda_function": "",
+          "chainError": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": 54,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "URL",
+        "name": "url",
+        "hint": "**Important:** This input will return up to 100 queries for the URL, ranked by clicks in descending order.",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "wordpress",
+    "action": "WordPress Create Post",
+    "definition": [
+      {
+        "name": "step_4",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code",
+          "note": "",
+          "show_note": ""
+        },
+        "config": {
+          "height": 0,
+          "width": 0,
+          "language": "python",
+          "function": "import base64\nimport requests\nimport json\n\nurl = wordpress_url or integration.get('url')\nactual_post_type = (post_type or 'posts').strip('/').lower()\nendpoint = f'{url}/wp-json/wp/v2/{actual_post_type}'\nusername = integration.get('username')\npassword = integration.get('password')\ntoken = base64.b64encode(f\"{username}:{password}\".encode('ascii')).decode('ascii')\nheaders = {\n \"Authorization\": f'Basic {token}',\n \"Content-Type\": \"application/json\",\n \"User-Agent\": \"AirOps WordPress/1.0\"\n}\n\ndata = {\n \"status\": status,\n \"password\": None,\n \"title\": title,\n \"content\": content,\n \"author\": author_id or None,\n \"excerpt\": excerpt,\n \"comment_status\": \"closed\",\n \"ping_status\": \"closed\",\n \"format\": \"standard\",\n \"meta\": meta or None,\n \"sticky\": False,\n \"template\": template,\n \"featured_media\": featured_media_id,\n \"categories\": categories,\n \"slug\": slug,\n \"acf\": acf_data\n}\n\nresponse = requests.post(endpoint, headers=headers, json=data)\n\nif response.status_code in [200, 201, 202, 203, 204]:\n return {\n 'data': response.json(),\n 'status_code': response.status_code,\n 'error': None,\n }\nelse:\n extra = requests.post('https://httpbin.org/anything', headers=headers)\n return {\n 'data': None,\n 'status_code': response.status_code,\n 'extra': extra.json(),\n 'error': {\n 'error_message': \"Failed to create post\",\n 'explanation': response.text [0:1000],\n 'status_code': response.status_code,\n 'headers': dict(response.headers),\n },\n }\n",
+          "soft_fail": false,
+          "chainError": "",
+          "lambda_function": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "Integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Wordpress URL",
+        "name": "wordpress_url",
+        "hint": "Set your WordPress installation URL, i.e. https://mywordpresssite.com/blog\nLeave empty to use the URL from your WordPress authentication",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Author ID",
+        "name": "author_id",
+        "hint": "The numeric author's ID to use",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Title",
+        "name": "title",
+        "hint": "The title for the post",
+        "required": true,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "long_text",
+        "label": "Content",
+        "name": "content",
+        "hint": "The HTML content for the post",
+        "required": true,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "long_text",
+        "label": "Excerpt",
+        "name": "excerpt",
+        "hint": "The excerpt for the post",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Slug",
+        "name": "slug",
+        "hint": "An alphanumeric identifier for the post unique to its type",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Featured Media ID",
+        "name": "featured_media_id",
+        "hint": "The ID of the featured media for the post",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "single_select",
+        "label": "Status",
+        "name": "status",
+        "hint": "A named status for the post. \"Draft\" by default. Use \"Publish\" to make it public as soon as it's created",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": [
+          "draft"
+        ],
+        "options": [
+          "draft",
+          "pending",
+          "private",
+          "publish",
+          "future"
+        ]
+      },
+      {
+        "interface": "json",
+        "label": "Meta",
+        "name": "meta",
+        "hint": "Meta fields. Expects a JSON object",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Template",
+        "name": "template",
+        "hint": "The theme file to use to display the post",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "Post Type",
+        "name": "post_type",
+        "hint": "Leave empty to use the default (posts). If you want to create a post with a custom post type, set the plural version of the post type here. i.e. \"authors\", \"items\"",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "posts",
+        "options": []
+      },
+      {
+        "interface": "json",
+        "label": "Categories",
+        "name": "categories",
+        "hint": "Must be an array of the terms assigned to the post in the category taxonomy.",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "json",
+        "label": "Advanced Custom Fields Data",
+        "name": "acf_data",
+        "hint": "From the Advanced Custom Fields plugin. Leave empty to ignore. Field expects JSON data. Field group must have Show In Rest API setting enabled.",
+        "required": false,
+        "group_id": "4edef0ec-2d25-4430-b46c-dd2222ee8b7b",
+        "action_id": "",
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "{}",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "youtube",
+    "action": "Retrieve Video Captions",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "config": {
+          "language": "python",
+          "function": "import requests\n\n# inputs: integration -\u003e oauth\n# inputs: dynamic -\u003e { video_id, language_id }\n\ndef download_captions(token, caption_id):\n url = f\"https://www.googleapis.com/youtube/v3/captions/{caption_id}?tfmt=srt\"\n headers = {\n 'Authorization': f'Bearer {token}'\n }\n\n response = requests.get(url, headers=headers)\n\n if response.status_code == 200:\n return response.text\n else:\n raise Exception(f\"Error fetching video captions {response.status_code}\")\n\ndef parse_time_seconds(time):\n parsed = time.replace(\",\", \".\")\n parsed = sum(float(x) * 60 ** i for i, x in enumerate(reversed(parsed.split(\":\"))))\n parsed = round(parsed, 3)\n return parsed\n\ndef parse_captions(captions):\n captions = captions.split(\"\\n\\n\")\n parsed_captions = []\n for caption in captions:\n lines = caption.split(\"\\n\")\n\n # account for captions that end with an extra \\n character\n if lines == ['']:\n continue\n\n # account for videos with a single line of caption\n if (len(lines) \u003c 3):\n lines = [None] + lines\n\n start, end = lines[1].split(\" --\u003e \")\n text = \" \".join(lines[2:])\n start_time = parse_time_seconds(start)\n end_time = parse_time_seconds(end)\n\n duration = round(end_time - start_time, 3)\n parsed_captions.append({\n \"start\": start_time,\n \"duration\": duration,\n \"text\": text\n })\n\n return parsed_captions\n\n\nvideo_captions = download_captions(integration.get('token'), dynamic.get('caption_id'))\n\nreturn parse_captions(video_captions)",
+          "soft_fail": false,
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": 52,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "google_search_console",
+    "action": "Get Page Performance Overview",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Fetch Search Console Data",
+          "note": "Retrieves performance metrics from Google Search Console for specified date ranges. It aggregates data such as clicks, impressions, CTR, and position for analysis.",
+          "show_note": true
+        },
+        "config": {
+          "language": "python",
+          "function": "# inputs: integration -\u003e { token }\n# inputs: dynamic -\u003e { site }\n\nimport requests\nimport datetime\nfrom urllib.parse import quote\n\ndef fetch_search_console_data(start_date, end_date):\n site = quote(dynamic['site'], safe='')\n token = integration['token']\n gsc_url = f\"https://www.googleapis.com/webmasters/v3/sites/{site}/searchAnalytics/query\"\n\n headers = {\n \"Authorization\": f\"Bearer {token}\",\n \"Content-Type\": \"application/json\"\n }\n body = {\n \"startDate\": start_date,\n \"endDate\": end_date,\n \"dimensions\": [\"date\", \"page\"],\n \"rowLimit\": 1000,\n \"dimensionFilterGroups\": [\n {\n \"filters\": [\n {\n \"dimension\": \"page\",\n \"operator\": \"equals\",\n \"expression\": url\n }\n ]\n }\n ]\n }\n response = requests.post(gsc_url, headers=headers, json=body)\n if response.status_code == 200:\n return response.json()\n else:\n raise Exception(f\"API request failed: {response.status_code}, {response.text}\")\n\n# Helper to aggregate metrics by summing up values (for clicks and impressions)\ndef aggregate_metric(data, metric):\n return sum(row.get(metric, 0) for row in data.get('rows', []))\n\n# Helper to compute a weighted average for a given metric (e.g., position weighted by impressions)\ndef aggregate_weighted_average(data, metric, weight_metric):\n numerator = 0\n denominator = 0\n for row in data.get('rows', []):\n weight = row.get(weight_metric, 0)\n value = row.get(metric, 0)\n numerator += value * weight\n denominator += weight\n return numerator / denominator if denominator \u003e 0 else 0\n\n# Helper to compute overall CTR as total_clicks / total_impressions\ndef aggregate_ctr(data):\n total_clicks = aggregate_metric(data, 'clicks')\n total_impressions = aggregate_metric(data, 'impressions')\n return total_clicks / total_impressions if total_impressions else 0\n\n# Calculate net change between two values\ndef calculate_net_change(current, previous):\n return current - previous\n\ndef calculate_mom_wow_changes():\n # Calculate date ranges\n today = datetime.date.today()\n one_week_ago = (today - datetime.timedelta(days=7)).strftime(\"%Y-%m-%d\")\n two_weeks_ago = (today - datetime.timedelta(days=14)).strftime(\"%Y-%m-%d\")\n one_month_ago = (today - datetime.timedelta(days=30)).strftime(\"%Y-%m-%d\")\n two_months_ago = (today - datetime.timedelta(days=60)).strftime(\"%Y-%m-%d\")\n\n # Fetch data\n current_month_data = fetch_search_console_data(one_month_ago, today.strftime(\"%Y-%m-%d\"))\n previous_month_data = fetch_search_console_data(two_months_ago, one_month_ago)\n current_week_data = fetch_search_console_data(one_week_ago, today.strftime(\"%Y-%m-%d\"))\n previous_week_data = fetch_search_console_data(two_weeks_ago, one_week_ago)\n\n # Aggregate clicks and impressions by summing\n current_month_clicks = aggregate_metric(current_month_data, 'clicks')\n previous_month_clicks = aggregate_metric(previous_month_data, 'clicks')\n current_week_clicks = aggregate_metric(current_week_data, 'clicks')\n previous_week_clicks = aggregate_metric(previous_week_data, 'clicks')\n\n current_month_impressions = aggregate_metric(current_month_data, 'impressions')\n previous_month_impressions = aggregate_metric(previous_month_data, 'impressions')\n current_week_impressions = aggregate_metric(current_week_data, 'impressions')\n previous_week_impressions = aggregate_metric(previous_week_data, 'impressions')\n\n # Calculate overall CTR using the aggregated clicks and impressions\n current_month_ctr = aggregate_ctr(current_month_data)\n previous_month_ctr = aggregate_ctr(previous_month_data)\n current_week_ctr = aggregate_ctr(current_week_data)\n previous_week_ctr = aggregate_ctr(previous_week_data)\n\n # Calculate weighted average position (weighted by impressions)\n current_month_position = aggregate_weighted_average(current_month_data, 'position', 'impressions')\n previous_month_position = aggregate_weighted_average(previous_month_data, 'position', 'impressions')\n current_week_position = aggregate_weighted_average(current_week_data, 'position', 'impressions')\n previous_week_position = aggregate_weighted_average(previous_week_data, 'position', 'impressions')\n \n # Calculate net change for each metric\n net_clicks_mom = calculate_net_change(current_month_clicks, previous_month_clicks)\n net_clicks_wow = calculate_net_change(current_week_clicks, previous_week_clicks)\n net_impressions_mom = calculate_net_change(current_month_impressions, previous_month_impressions)\n net_impressions_wow = calculate_net_change(current_week_impressions, previous_week_impressions)\n net_ctr_mom = calculate_net_change(current_month_ctr, previous_month_ctr)\n net_ctr_wow = calculate_net_change(current_week_ctr, previous_week_ctr)\n net_position_mom = calculate_net_change(current_month_position, previous_month_position)\n net_position_wow = calculate_net_change(current_week_position, previous_week_position)\n\n # Construct result dictionary\n return {\n \"clicks\": {\n \"L7D\": current_week_clicks,\n \"L30D\": current_month_clicks,\n \"WoW Change\": net_clicks_wow,\n \"MoM Change\": net_clicks_mom,\n },\n \"impressions\": {\n \"L7D\": current_week_impressions,\n \"L30D\": current_month_impressions,\n \"WoW Change\": net_impressions_wow,\n \"MoM Change\": net_impressions_mom,\n },\n \"ctr\": {\n \"L7D\": current_week_ctr,\n \"L30D\": current_month_ctr,\n \"WoW Change\": net_ctr_wow,\n \"MoM Change\": net_ctr_mom,\n },\n \"position\": {\n \"L7D\": current_week_position,\n \"L30D\": current_month_position,\n \"WoW Change\": net_position_wow,\n \"MoM Change\": net_position_mom,\n },\n }\n\nif dynamic is None:\n raise Exception(\"currently you don't have access to any Google Search Console domains. Try again later.\")\n\nreturn calculate_mom_wow_changes()\n",
+          "soft_fail": false,
+          "lambda_function": "",
+          "chainError": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": 54,
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "url",
+        "name": "url",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  },
+  {
+    "integration": "google_search_console",
+    "action": "Get Query Page Performance Breakdown",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code"
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\nimport datetime\nfrom dateutil.relativedelta import relativedelta\n\ndef get_date_range(period_str):\n \"\"\"\n Returns (start_date_obj, end_date_obj) for the given period string.\n end_date_obj is set to yesterday, start_date_obj is calculated accordingly.\n \"\"\"\n today = datetime.date.today()\n end_date_obj = today - datetime.timedelta(days=1)\n\n if period_str == \"Last 7 days\":\n # 7-day window (yesterday + 6 additional days)\n start_date_obj = end_date_obj - datetime.timedelta(days=6)\n elif period_str == \"Last 28 days\":\n # 28-day window\n start_date_obj = end_date_obj - datetime.timedelta(days=27)\n elif period_str == \"Last 3 months\":\n start_date_obj = end_date_obj - relativedelta(months=3)\n elif period_str == \"Last 6 months\":\n start_date_obj = end_date_obj - relativedelta(months=6)\n elif period_str == \"Last 12 months\":\n start_date_obj = end_date_obj - relativedelta(months=12)\n elif period_str == \"Last 16 months\":\n start_date_obj = end_date_obj - relativedelta(months=16)\n else:\n raise ValueError(f\"Unsupported period: {period_str}\")\n\n return start_date_obj, end_date_obj\n\ndef fetch_search_console_queries():\n # Pull in site, token, and period from your dictionaries\n site_url = dynamic['site']\n token = integration['token']\n # 'period' is presumably provided somewhere in your environment or code\n # e.g. period = \"Last 7 days\" or \"Last 3 months\"\n # Make sure you have that variable accessible in this scope:\n # period = ...\n\n # -------------------------------------------------\n # DYNAMIC DATE RANGE BASED ON `period`\n # -------------------------------------------------\n start_date_obj, end_date_obj = get_date_range(period)\n # Format as \"YYYY-MM-DD\"\n start_date = start_date_obj.strftime(\"%Y-%m-%d\")\n end_date = end_date_obj.strftime(\"%Y-%m-%d\")\n\n # Row limits\n row_limit = 20\n pages_row_limit = 5\n\n # Base endpoint and headers\n gsc_url = f\"https://www.googleapis.com/webmasters/v3/sites/{site_url}/searchAnalytics/query\"\n headers = {\n \"Authorization\": f\"Bearer {token}\",\n \"Content-Type\": \"application/json\"\n }\n\n # -------------------------------------------------\n # 1) FETCH ALL QUERIES (dimension = [\"query\"])\n # -------------------------------------------------\n body_for_queries = {\n \"startDate\": start_date,\n \"endDate\": end_date,\n \"dimensions\": [\"query\"],\n \"rowLimit\": row_limit\n }\n\n response = requests.post(gsc_url, headers=headers, json=body_for_queries)\n if response.status_code != 200:\n raise Exception(\n f\"Google Search Console API request (queries) failed: \"\n f\"{response.status_code}, {response.text}\"\n )\n\n data = response.json()\n query_rows = data.get(\"rows\", [])\n\n # Store aggregated data\n queries_aggregator = {}\n for row in query_rows:\n query_key = row[\"keys\"][0] # dimension = [\"query\"]\n queries_aggregator[query_key] = {\n \"clicks\": 0,\n \"impressions\": 0,\n \"position_times_impressions\": 0.0,\n \"ranking_pages\": []\n }\n\n # -------------------------------------------------\n # 2) FOR EACH QUERY, FETCH THE PAGES\n # -------------------------------------------------\n for query_key in queries_aggregator:\n body_for_pages = {\n \"startDate\": start_date,\n \"endDate\": end_date,\n \"dimensions\": [\"page\"],\n \"dimensionFilterGroups\": [\n {\n \"filters\": [\n {\n \"dimension\": \"query\",\n \"operator\": \"equals\",\n \"expression\": query_key\n }\n ]\n }\n ],\n \"rowLimit\": pages_row_limit\n }\n\n page_response = requests.post(gsc_url, headers=headers, json=body_for_pages)\n if page_response.status_code != 200:\n raise Exception(\n f\"Google Search Console API request (pages) failed for query='{query_key}': \"\n f\"{page_response.status_code}, {page_response.text}\"\n )\n\n page_data = page_response.json()\n page_rows = page_data.get(\"rows\", [])\n\n for p_row in page_rows:\n page_url = p_row[\"keys\"][0]\n clicks = p_row.get(\"clicks\", 0)\n impressions = p_row.get(\"impressions\", 0)\n ctr = p_row.get(\"ctr\", 0.0)\n position = p_row.get(\"position\", 0.0)\n\n # Accumulate into aggregator\n queries_aggregator[query_key][\"clicks\"] += clicks\n queries_aggregator[query_key][\"impressions\"] += impressions\n queries_aggregator[query_key][\"position_times_impressions\"] += position * impressions\n\n # Store page-level data\n queries_aggregator[query_key][\"ranking_pages\"].append({\n \"url\": page_url,\n \"clicks\": clicks,\n \"impressions\": impressions,\n \"ctr\": ctr,\n \"position\": position\n })\n\n # -------------------------------------------------\n # 3) BUILD THE FINAL OUTPUT\n # -------------------------------------------------\n queries_output = []\n for query_key, agg in queries_aggregator.items():\n total_clicks = agg[\"clicks\"]\n total_impressions = agg[\"impressions\"]\n sum_pos_times_impr = agg[\"position_times_impressions\"]\n\n average_ctr = (total_clicks / total_impressions) if total_impressions \u003e 0 else 0\n average_position = (sum_pos_times_impr / total_impressions) if total_impressions \u003e 0 else 0\n\n # Build the final list of ranking pages for this query\n ranking_pages_enriched = []\n for page in agg[\"ranking_pages\"]:\n page_clicks = page[\"clicks\"]\n page_imps = page[\"impressions\"]\n\n # Calculate click and impression percentages out of the query total\n if total_clicks \u003e 0:\n clicks_percent_total = (page_clicks / total_clicks) * 100\n else:\n clicks_percent_total = 0.0\n\n if total_impressions \u003e 0:\n impressions_percent_total = (page_imps / total_impressions) * 100\n else:\n impressions_percent_total = 0.0\n\n page[\"clicks_percent_total\"] = round(clicks_percent_total, 2)\n page[\"impressions_percent_total\"] = round(impressions_percent_total, 2)\n ranking_pages_enriched.append(page)\n\n queries_output.append({\n \"query\": query_key,\n \"clicks\": total_clicks,\n \"impressions\": total_impressions, # Fix spelling here if needed\n \"ctr\": round(average_ctr * 100, 2),\n \"position\": round(average_position, 2),\n \"ranking_pages\": ranking_pages_enriched\n })\n\n # Build metadata\n metadata = {\n \"start_date\": start_date,\n \"end_date\": end_date,\n \"queries\": len(queries_output),\n \"urls\": sum(len(q[\"ranking_pages\"]) for q in queries_output)\n }\n\n return {\n \"queries\": queries_output,\n \"metadata\": metadata\n }\n\n# Return (or print) the result of the function\nreturn_value = fetch_search_console_queries()\nreturn return_value\n",
+          "soft_fail": false,
+          "lambda_function": "",
+          "chainError": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": 54,
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "single_select",
+        "label": "period",
+        "name": "period",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": [
+          "Last 28 days"
+        ],
+        "options": [
+          "Last 7 days",
+          "Last 28 days",
+          "Last 3 months",
+          "Last 6 months",
+          "Last 12 months",
+          "Last 16 months"
+        ]
+      }
+    ]
+  },
+  {
+    "integration": "google_search_console",
+    "action": "Get Page Indexing Status",
+    "definition": [
+      {
+        "name": "step_1",
+        "type": "code",
+        "annotations": {
+          "friendly_name": "Code"
+        },
+        "config": {
+          "language": "python",
+          "function": "import requests\n\ndef fetch_page_index_status():\n try:\n # Get required inputs\n site = dynamic['site']\n token = integration['token']\n \n # URL Inspection API endpoint (beta)\n gsc_url = \"https://searchconsole.googleapis.com/v1/urlInspection/index:inspect\"\n\n headers = {\n \"Authorization\": f\"Bearer {token}\",\n \"Content-Type\": \"application/json\"\n }\n \n # Build the request body. The languageCode parameter is optional.\n body = {\n \"inspectionUrl\": url,\n \"siteUrl\": site,\n \"languageCode\": \"en-US\"\n }\n\n response = requests.post(gsc_url, headers=headers, json=body)\n \n if response.status_code == 200:\n result = response.json()\n \n # The response includes an \"inspectionResult\" object.\n # Within that, the \"indexStatusResult\" typically contains details about the index status.\n inspection_result = result.get(\"inspectionResult\", {})\n index_status_result = inspection_result.get(\"indexStatusResult\", {})\n \n # The API returns \"lastCrawlTime\" as an ISO8601 datetime string.\n last_crawled_at = index_status_result.get(\"lastCrawlTime\")\n \n # The \"verdict\" field indicates the indexing status.\n index_status = index_status_result.get(\"verdict\", \"\")\n indexed = index_status == \"PASS\"\n \n return {\n \"last_crawled_at\": last_crawled_at,\n \"indexed\": indexed\n }\n elif response.status_code == 403:\n # Parse and return only the error message from the API response.\n error_response = response.json()\n error_message = error_response.get(\"error\", {}).get(\"message\", \"Unknown error\")\n return {\"error\": error_message}\n else:\n # For other errors, raise an exception.\n raise Exception(f\"API request failed: {response.status_code}, {response.text}\")\n except Exception as e:\n return {\"error\": str(e)}\n\n# Example usage:\nreturn fetch_page_index_status()\n",
+          "soft_fail": false,
+          "lambda_function": "",
+          "chainError": "",
+          "errors": {}
+        }
+      }
+    ],
+    "inputs_schema": [
+      {
+        "interface": "integration",
+        "label": "integration",
+        "name": "integration",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "dynamic",
+        "label": "dynamic",
+        "name": "dynamic",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": 54,
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "",
+        "options": []
+      },
+      {
+        "interface": "short_text",
+        "label": "URL",
+        "name": "url",
+        "hint": "",
+        "required": true,
+        "group_id": "no-group",
+        "action_id": "",
+        "placeholder": "",
+        "default_instruction": "",
+        "test_value": "",
+        "options": []
+      }
+    ]
+  }
+]
+
+</integration_actions>
