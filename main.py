@@ -4,7 +4,17 @@ from src.graph import create_enhanced_integration_agent
 from utils.helpers import load_integration_actions, load_workflow_context
 
 def test_integration_agent():
-    """Test the integration agent with sample requests"""
+    """
+    Test the AirOps Integration Agent with sample natural language requests.
+
+    - Loads integration actions and workflow context.
+    - Runs the agent on each test request.
+    - Prints status, confidence, workflow, and clarification questions.
+    - Saves all results to 'examples/test_results.json'.
+
+    Returns:
+        List of results for each test request.
+    """
     
     # Load data
     integration_actions = load_integration_actions()
