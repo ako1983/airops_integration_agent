@@ -1,0 +1,17 @@
+# .gitignore
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.env
+.vscode/
+.idea/
+*.log
+.DS_Store
+examples/test_results.json
+airops_venv
+*.Identifier
