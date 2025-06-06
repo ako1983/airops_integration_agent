@@ -1,7 +1,7 @@
 # src/nodes/validator.py
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Type
 import json
 
 
@@ -22,24 +22,32 @@ class ValidatorOutput(BaseModel):
 
 
 class ParameterValidatorTool(BaseTool):
-    name = "parameter_validator"
-    description = "Validates parameters against the action schema"
-    args_schema = ValidatorInput
+    name: str = "parameter_validator"
+    description: str = "Validates parameters against the action schema"
+    # args_schema removed - using state-based input extraction
 
-    def _run(
-            self,
-            action_schema: Dict[str, Any],
-            parameters: List[Dict[str, Any]]
-    ) -> ValidatorOutput:
+    def _run(self, **kwargs) -> Dict[str, Any]:
+        # Extract state from kwargs or use kwargs as state
+        state = kwargs.get('state', kwargs)
         """
-        Validate parameters against the integration action schema.
+        Validate parameters against the integration action schema from state.
         """
+        # Extract inputs from state
+        action_schema = state.get("action_schema", [])
+        parameters = state.get("parameters", [])
+        
+        # Handle case where action_schema is a list or dict
+        if isinstance(action_schema, list):
+            inputs_schema = action_schema
+        else:
+            inputs_schema = action_schema.get("inputs_schema", [])
+        
         # Create parameter lookup
         param_lookup = {p["name"]: p["value"] for p in parameters}
         errors = []
 
         # Validate against schema
-        for schema_param in action_schema["inputs_schema"]:
+        for schema_param in inputs_schema:
             param_name = schema_param["name"]
 
             # Check if required parameter is missing
@@ -81,10 +89,20 @@ class ParameterValidatorTool(BaseTool):
                     suggestion=f"Please select one of the allowed options: {schema_param['options']}"
                 ))
 
-        return ValidatorOutput(
-            is_valid=len(errors) == 0,
-            errors=errors
-        )
+        # Update state with validation results
+        new_state = state.copy()
+        new_state.update({
+            "validation_result": {
+                "is_valid": len(errors) == 0,
+                "errors": [{
+                    "parameter": e.parameter,
+                    "error": e.error,
+                    "suggestion": e.suggestion
+                } for e in errors]
+            }
+        })
+        
+        return new_state
 
     def _is_valid_json(self, value):
         """Check if a value is valid JSON or a valid JSON string"""

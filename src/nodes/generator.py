@@ -1,7 +1,7 @@
 # src/nodes/generator.py
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Type
 from utils.helpers import extract_parameters_from_request
 
 
@@ -24,25 +24,33 @@ class GeneratorOutput(BaseModel):
 
 
 class ParameterGeneratorTool(BaseTool):
-    name = "parameter_generator"
-    description = "Generates parameters for an integration action based on schema"
-    args_schema = GeneratorInput
+    name: str = "parameter_generator"
+    description: str = "Generates parameters for an integration action based on schema"
+    # args_schema removed - using state-based input extraction
 
-    def _run(
-            self,
-            action_schema: Dict[str, Any],
-            context_variables: Dict[str, Any],
-            user_request: str
-    ) -> GeneratorOutput:
+    def _run(self, **kwargs) -> Dict[str, Any]:
+        # Extract state from kwargs or use kwargs as state
+        state = kwargs.get('state', kwargs)
         """
-        Generate parameters for the integration action based on schema.
+        Generate parameters for the integration action based on schema from state.
         """
+        # Extract inputs from state
+        action_schema = state.get("action_schema", [])
+        context_variables = state.get("context_variables", {})
+        user_request = state.get("user_request", "")
+        
         # Extract parameters from user request
         extracted_params = extract_parameters_from_request(user_request)
 
+        # Handle case where action_schema is a list or dict
+        if isinstance(action_schema, list):
+            inputs_schema = action_schema
+        else:
+            inputs_schema = action_schema.get("inputs_schema", [])
+        
         # Get required parameters from schema
         required_params = [
-            param for param in action_schema["inputs_schema"]
+            param for param in inputs_schema
             if param.get("required", False)
         ]
 
@@ -50,7 +58,7 @@ class ParameterGeneratorTool(BaseTool):
         parameters = []
         missing_parameters = []
 
-        for param in action_schema["inputs_schema"]:
+        for param in inputs_schema:
             param_name = param["name"]
             param_type = param.get("interface", "short_text")
 
@@ -95,8 +103,16 @@ class ParameterGeneratorTool(BaseTool):
         if required_params:
             confidence = (len(required_params) - len(missing_parameters)) / len(required_params)
 
-        return GeneratorOutput(
-            parameters=parameters,
-            missing_parameters=missing_parameters,
-            confidence=confidence
-        )
+        # Update state with generated parameters
+        new_state = state.copy()
+        new_state.update({
+            "parameters": [{
+                "name": p.name,
+                "value": p.value,
+                "source": p.source
+            } for p in parameters],
+            "missing_parameters": missing_parameters,
+            "parameter_confidence": confidence
+        })
+        
+        return new_state

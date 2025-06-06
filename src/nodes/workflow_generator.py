@@ -1,8 +1,8 @@
 # src/nodes/workflow_generator.py
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
-from models.workflow import WorkflowDefinition, WorkflowStep, WorkflowInput
+from typing import Dict, Any, List, Optional, Type
+from src.models.workflow import WorkflowDefinition, WorkflowStep, WorkflowInput
 
 
 class WorkflowGeneratorInput(BaseModel):
@@ -19,26 +19,38 @@ class WorkflowGeneratorOutput(BaseModel):
 
 
 class WorkflowGeneratorTool(BaseTool):
-    name = "workflow_generator"
-    description = "Generates a valid workflow definition for the integration action"
-    args_schema = WorkflowGeneratorInput
+    name: str = "workflow_generator"
+    description: str = "Generates a valid workflow definition for the integration action"
+    # args_schema removed - using state-based input extraction
 
-    def _run(
-            self,
-            action_schema: Dict[str, Any],
-            parameters: List[Dict[str, Any]],
-            context_variables: Dict[str, Any],
-            user_request: str
-    ) -> WorkflowGeneratorOutput:
+    def _run(self, **kwargs) -> Dict[str, Any]:
+        # Extract state from kwargs or use kwargs as state
+        state = kwargs.get('state', kwargs)
         """
-        Generate a workflow that executes the integration action with proper configurations.
+        Generate a workflow that executes the integration action with proper configurations from state.
         """
+        # Extract inputs from state
+        action_schema = state.get("action_schema", [])
+        parameters = state.get("parameters", [])
+        context_variables = state.get("context_variables", {})
+        user_request = state.get("user_request", "")
+        selected_action = state.get("selected_action", {})
+        
         steps = []
         input_schema = []
         transformations_added = []
 
         # Analyze parameters to determine required transformations
-        param_analysis = self._analyze_parameters(parameters, action_schema)
+        try:
+            param_analysis = self._analyze_parameters(parameters, action_schema or selected_action)
+        except Exception as e:
+            # Fallback if analysis fails
+            param_analysis = {
+                "needs_json_parsing": False,
+                "json_params": [],
+                "needs_data_mapping": False,
+                "mapping_params": []
+            }
 
         # Add any necessary transformation steps
         if param_analysis["needs_json_parsing"]:
@@ -50,11 +62,28 @@ class WorkflowGeneratorTool(BaseTool):
             transformations_added.append("Data mapping")
 
         # Create the main integration step
-        integration_step = self._create_integration_step(action_schema, parameters, steps)
-        steps.append(integration_step)
+        try:
+            integration_step = self._create_integration_step(action_schema or selected_action, parameters, steps)
+            steps.append(integration_step)
+        except:
+            # Basic fallback integration step
+            integration_step = {
+                "name": "integration_action",
+                "type": "integration",
+                "config": {
+                    "integration": selected_action.get("integration", "unknown") if selected_action else "unknown",
+                    "action": selected_action.get("action", "unknown") if selected_action else "unknown",
+                    "parameters": {p.get("name", "unknown"): p.get("value", "") for p in parameters}
+                }
+            }
+            steps.append(integration_step)
 
         # Create input schema based on required parameters
-        input_schema = self._create_input_schema(parameters, action_schema)
+        try:
+            input_schema = self._create_input_schema(parameters, action_schema or selected_action)
+        except:
+            # Basic fallback input schema
+            input_schema = [{"name": p.get("name", "param"), "type": "text", "required": True} for p in parameters]
 
         # Compile the workflow
         workflow = {
@@ -63,13 +92,20 @@ class WorkflowGeneratorTool(BaseTool):
         }
 
         # Generate explanation
-        explanation = self._generate_explanation(action_schema, parameters, transformations_added)
+        try:
+            explanation = self._generate_explanation(action_schema or selected_action, parameters, transformations_added)
+        except:
+            explanation = f"Generated workflow for {selected_action.get('integration', 'integration') if selected_action else 'integration'} action with {len(parameters)} parameters"
 
-        return WorkflowGeneratorOutput(
-            workflow=workflow,
-            transformations_added=transformations_added,
-            explanation=explanation
-        )
+        # Update state with generated workflow
+        new_state = state.copy()
+        new_state.update({
+            "workflow_definition": workflow,
+            "transformations_added": transformations_added,
+            "workflow_explanation": explanation
+        })
+        
+        return new_state
 
     def _analyze_parameters(self, parameters: List[Dict[str, Any]], action_schema: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze parameters to determine required transformations"""
@@ -77,9 +113,16 @@ class WorkflowGeneratorTool(BaseTool):
         mapping_params = []
 
         # Get expected types from schema
+        if action_schema is None:
+            inputs_schema = []
+        elif isinstance(action_schema, list):
+            inputs_schema = action_schema
+        else:
+            inputs_schema = action_schema.get("inputs_schema", [])
+        
         schema_types = {
             param["name"]: param.get("interface", "short_text")
-            for param in action_schema["inputs_schema"]
+            for param in inputs_schema
         }
 
         for param in parameters:

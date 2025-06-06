@@ -1,7 +1,7 @@
 # src/nodes/final_output.py
 from langchain.tools import BaseTool
 from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Type
 
 
 class FinalOutputInput(BaseModel):
@@ -21,20 +21,22 @@ class FinalOutputResult(BaseModel):
 
 
 class FinalOutputNode(BaseTool):
-    name = "final_output"
-    description = "Prepares the final output for the user"
-    args_schema = FinalOutputInput
+    name: str = "final_output"
+    description: str = "Prepares the final output for the user"
+    # args_schema removed - using state-based input extraction
 
-    def _run(
-            self,
-            workflow: Dict[str, Any],
-            action_schema: Dict[str, Any],
-            confidence: float,
-            explanation: str
-    ) -> FinalOutputResult:
+    def _run(self, **kwargs) -> Dict[str, Any]:
+        # Extract state from kwargs or use kwargs as state
+        state = kwargs.get('state', kwargs)
         """
-        Prepare the final workflow output with validation and suggestions.
+        Prepare the final workflow output with validation and suggestions from state.
         """
+        # Extract inputs from state
+        workflow = state.get("workflow_definition", {})
+        action_schema = state.get("action_schema", [])
+        confidence = state.get("parameter_confidence", 0.5)
+        explanation = state.get("workflow_explanation", "Workflow generated successfully")
+        
         validation_warnings = []
         suggestions = []
 
@@ -55,14 +57,20 @@ class FinalOutputNode(BaseTool):
         # Determine status
         status = "success" if confidence >= 0.7 and not validation_warnings else "needs_review"
 
-        return FinalOutputResult(
-            status=status,
-            workflow=workflow,
-            confidence=confidence,
-            explanation=explanation,
-            suggestions=suggestions,
-            validation_warnings=validation_warnings
-        )
+        # Update state with final output
+        new_state = state.copy()
+        new_state.update({
+            "output_result": {
+                "status": status,
+                "workflow": workflow,
+                "confidence": confidence,
+                "explanation": explanation,
+                "suggestions": suggestions,
+                "validation_warnings": validation_warnings
+            }
+        })
+        
+        return new_state
 
     def _validate_workflow(self, workflow: Dict[str, Any]) -> Dict[str, Any]:
         """Validate the workflow structure"""
@@ -112,7 +120,14 @@ class FinalOutputNode(BaseTool):
 
         # Find optional parameters not used
         unused_optional = []
-        for param in action_schema["inputs_schema"]:
+        
+        # Handle case where action_schema is a list or dict
+        if isinstance(action_schema, list):
+            inputs_schema = action_schema
+        else:
+            inputs_schema = action_schema.get("inputs_schema", [])
+        
+        for param in inputs_schema:
             if not param.get("required", False) and param["name"] not in used_params:
                 unused_optional.append(param["name"])
 

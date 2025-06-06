@@ -998,7 +998,7 @@ class FinalOutputNode(BaseTool):
 ### ### ```python 
 # src/nodes/query_refiner.py
 from langchain.tools import BaseTool
-from langchain.chat_models import ChatAnthropic
+from langchain_anthropic import ChatAnthropic
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
@@ -1123,7 +1123,7 @@ class QueryRefinerNode(BaseTool):
 ### ### ```python 
 # src/graph.py
 from langgraph.graph import StateGraph
-from langchain.chat_models import ChatAnthropic
+from langchain_anthropic import ChatAnthropic
 from config.observability import ObservabilityConfig
 from utils.tracking import PerformanceTracker
 from nodes.query_refiner import QueryRefinerNode

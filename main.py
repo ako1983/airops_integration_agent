@@ -10,6 +10,12 @@ print(f"Project root: {project_root}")
 sys.path.insert(0, project_root)
 
 import json
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 from src.graph import create_enhanced_integration_agent
 from utils.helpers import load_integration_actions, load_workflow_context
 
@@ -58,11 +64,20 @@ def test_integration_agent():
         print(f"{'='*50}")
         
         try:
-            result = agent.run({
+            # Create initial state matching AgentState schema
+            initial_state = {
                 "user_request": test["request"],
-                "context": test["context"],
-                "integration_actions": integration_actions
-            })
+                "refined_query": "",
+                "selected_action": {},
+                "action_schema": {},
+                "parameters": [],
+                "validation_result": {},
+                "workflow_definition": {},
+                "output_result": {},
+                "context_variables": test.get("context", {})
+            }
+            
+            result = agent.invoke(initial_state)
             
             print(f"Status: {result.get('status', 'Unknown')}")
             print(f"Confidence: {result.get('confidence', 0.0):.2f}")
@@ -83,6 +98,8 @@ def test_integration_agent():
             
         except Exception as e:
             print(f"Error: {str(e)}")
+            import traceback
+            traceback.print_exc()
             results.append({
                 "request": test["request"],
                 "error": str(e)
